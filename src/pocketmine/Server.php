@@ -316,7 +316,7 @@ class Server{
 	 * @return string
 	 */
 	public function getName() : string{
-        return "LiteCore-public v1.0.9-release";
+        return \pocketmine\NAME;
 	}
 
 	/**
