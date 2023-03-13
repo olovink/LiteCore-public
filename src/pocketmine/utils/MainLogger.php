@@ -21,10 +21,15 @@
 
 namespace pocketmine\utils;
 
+use DateTime;
+use Exception;
 use LogLevel;
 use pocketmine\Server;
 use pocketmine\Thread;
 use pocketmine\Worker;
+use RuntimeException;
+use Threaded;
+use Throwable;
 use function fclose;
 use function fopen;
 use function fwrite;
@@ -56,44 +61,44 @@ use const PTHREADS_INHERIT_NONE;
 class MainLogger extends \AttachableThreadedLogger{
 
 	/** @var string */
-	protected $logFile;
-	/** @var \Threaded */
-	protected $logStream;
+	protected string $logFile;
+	/** @var Threaded  */
+	protected Threaded $logStream;
 	/** @var bool */
-	protected $shutdown = false;
+	protected bool $shutdown = false;
 	/** @var bool */
-	protected $logDebug;
+	protected bool $logDebug;
 	/** @var MainLogger|null */
-	public static $logger = null;
+	public static ?MainLogger $logger = null;
 	/** @var bool */
-	private $syncFlush = false;
+	private bool $syncFlush = false;
 
 	/** @var string */
-	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
+	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
 
 	/** @var bool */
-	private $mainThreadHasFormattingCodes = false;
+	private bool $mainThreadHasFormattingCodes = false;
 
 	/** Extra Settings */
-	protected $write = false;
+	protected bool $write = false;
 
 	private $consoleCallback;
 
 	/** @var string */
-	private $timezone;
+	private string $timezone;
 
 	/**
-	 * @throws \RuntimeException
+	 * @throws RuntimeException
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
 		parent::__construct();
 		if(static::$logger instanceof MainLogger){
-			throw new \RuntimeException("MainLogger has been already created");
+			throw new RuntimeException("MainLogger has been already created");
 		}
 		touch($logFile);
 		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
-		$this->logStream = new \Threaded;
+		$this->logStream = new Threaded;
 
 		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
 		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
@@ -121,7 +126,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	 *
 	 * @return void
 	 */
-	public function registerStatic(){
+	public function registerStatic(): void
+	{
 		if(static::$logger === null){
 			static::$logger = $this;
 		}
@@ -185,19 +191,21 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
+	 * @param bool $logDebug
 	 * @return void
 	 */
-	public function setLogDebug(bool $logDebug){
+	public function setLogDebug(bool $logDebug): void
+	{
 		$this->logDebug = $logDebug;
 	}
 
 	/**
-	 * @param mixed[][]|null $trace
-	 * @phpstan-param list<array<string, mixed>>|null $trace
-	 *
+	 * @param Throwable $e
+	 * @param null $trace
 	 * @return void
 	 */
-	public function logException(\Throwable $e, $trace = null){
+	public function logException(Throwable $e, $trace = null): void
+	{
 		if($trace === null){
 			$trace = $e->getTrace();
 		}
@@ -218,7 +226,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->syncFlushBuffer();
 	}
 
-	private static function printExceptionMessage(\Throwable $e) : string{
+	private static function printExceptionMessage(Throwable $e) : string{
 		static $errorConversion = [
 			0 => "EXCEPTION",
 			E_ERROR => "E_ERROR",
@@ -281,7 +289,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @return void
 	 */
-	public function shutdown(){
+	public function shutdown(): void
+	{
 		$this->synchronized(function() : void{
 			$this->shutdown = true;
 			$this->notify();
@@ -295,12 +304,14 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * @param string $color
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
-	protected function send($message, $level, $prefix, $color){
-		/** @var \DateTime|null $time */
+	protected function send(string $message, string $level, string $prefix, string $color): void
+	{
+		/** @var DateTime|null $time */
 		static $time = null;
 		if($time === null){ //thread-local
-			$time = new \DateTime('now', new \DateTimeZone($this->timezone));
+			$time = new DateTime('now', new \DateTimeZone($this->timezone));
 		}
 		$time->setTimestamp(time());
 
@@ -338,7 +349,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @return void
 	 */
-	public function syncFlushBuffer(){
+	public function syncFlushBuffer(): void
+	{
 		$this->synchronized(function() : void{
 			$this->syncFlush = true;
 			$this->notify(); //write immediately
@@ -373,10 +385,11 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @return void
 	 */
-	public function run(){
+	public function run(): void
+	{
 		$logResource = fopen($this->logFile, "ab");
 		if(!is_resource($logResource)){
-			throw new \RuntimeException("Couldn't open log file");
+			throw new RuntimeException("Couldn't open log file");
 		}
 
 		while(!$this->shutdown){
@@ -394,9 +407,11 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
+	 * @param bool $write
 	 * @return void
 	 */
-	public function setWrite(bool $write){
+	public function setWrite(bool $write): void
+	{
 		$this->write = $write;
 	}
 

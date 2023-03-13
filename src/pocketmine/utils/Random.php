@@ -34,29 +34,29 @@ class Random {
 	/**
 	 * @var int
 	 */
-	private $x;
+	private int $x;
 
 	/**
 	 * @var int
 	 */
-	private $y;
+	private int $y;
 
 	/**
 	 * @var int
 	 */
-	private $z;
+	private int $z;
 
 	/**
 	 * @var int
 	 */
-	private $w;
+	private int $w;
 
 	protected $seed;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
 	 */
-	public function __construct($seed = -1){
+	public function __construct(int $seed = -1){
 		if($seed === -1){
 			$seed = time();
 		}
@@ -67,7 +67,8 @@ class Random {
 	/**
 	 * @param int $seed Integer to be used as seed.
 	 */
-	public function setSeed($seed){
+	public function setSeed(int $seed): void
+	{
 		$this->seed = $seed;
 		$this->x = self::X ^ $seed;
 		$this->y = self::Y ^ ($seed << 17) | (($seed >> 15) & 0x7fffffff) & 0xffffffff;
@@ -84,7 +85,8 @@ class Random {
 	 *
 	 * @return int
 	 */
-	public function nextInt(){
+	public function nextInt(): int
+	{
 		return $this->nextSignedInt() & 0x7fffffff;
 	}
 
@@ -93,7 +95,8 @@ class Random {
 	 *
 	 * @return int
 	 */
-	public function nextSignedInt(){
+	public function nextSignedInt(): int
+	{
 		$t = ($this->x ^ ($this->x << 11)) & 0xffffffff;
 
 		$this->x = $this->y;
@@ -107,18 +110,20 @@ class Random {
 	/**
 	 * Returns a float between 0.0 and 1.0 (inclusive)
 	 *
-	 * @return float
+	 * @return float|int
 	 */
-	public function nextFloat(){
+	public function nextFloat(): float|int
+	{
 		return $this->nextInt() / 0x7fffffff;
 	}
 
 	/**
 	 * Returns a float between -1.0 and 1.0 (inclusive)
 	 *
-	 * @return float
+	 * @return float|int
 	 */
-	public function nextSignedFloat(){
+	public function nextSignedFloat(): float|int
+	{
 		return $this->nextSignedInt() / 0x7fffffff;
 	}
 
@@ -127,7 +132,8 @@ class Random {
 	 *
 	 * @return bool
 	 */
-	public function nextBoolean(){
+	public function nextBoolean(): bool
+	{
 		return ($this->nextSignedInt() & 0x01) === 0;
 	}
 
@@ -139,7 +145,8 @@ class Random {
 	 *
 	 * @return int
 	 */
-	public function nextRange($start = 0, $end = 0x7fffffff){
+	public function nextRange(int $start = 0, int $end = 0x7fffffff): int
+	{
 		return $start + ($this->nextInt() % ($end + 1 - $start));
 	}
 
@@ -148,7 +155,8 @@ class Random {
 	 *
 	 * @return int
 	 */
-	public function nextBoundedInt($bound){
+	public function nextBoundedInt($bound): int
+	{
 		return $this->nextInt() % $bound;
 	}
 

@@ -244,10 +244,6 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("uopz")){
-		//$logger->notice("Couldn't find the uopz extension. Some functions may be limited");
-	}
-
 	if(extension_loaded("pocketmine")){
 		$logger->critical("The native PocketMine extension is no longer supported.");
 		++$errors;
@@ -331,7 +327,6 @@ JIT_WARNING
 		}
 	}
 
-	//TODO: move this to a Server field
 	define('pocketmine\START_TIME', microtime(true));
 	ThreadManager::init();
 	new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
@@ -339,7 +334,7 @@ JIT_WARNING
 	$logger->info("Stopping other threads");
 
 	$killer = new ServerKiller(8);
-	$killer->start(PTHREADS_INHERIT_CONSTANTS);
+	$killer->start(PTHREADS_INHERIT_NONE);
 	usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 	$logger->shutdown();

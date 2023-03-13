@@ -53,7 +53,8 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function getCallableIdentifier(callable $variable){
+	public static function getCallableIdentifier(callable $variable): string
+	{
 		if(is_array($variable)){
 			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
 		}else{
@@ -64,7 +65,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the class of the given object. Sanitizes class names for anonymous classes.
 	 *
-	 * @throws \ReflectionException
 	 */
 	public static function getNiceClassName(object $obj) : string{
 		$reflect = new \ReflectionClass($obj);
@@ -90,7 +90,8 @@ class Utils{
 	 *
 	 * @return UUID
 	 */
-	public static function getMachineUniqueId($extra = ""){
+	public static function getMachineUniqueId(string $extra = ""): ?UUID
+	{
 		if(self::$serverUniqueId !== null and $extra === ""){
 			return self::$serverUniqueId;
 		}
@@ -149,15 +150,16 @@ class Utils{
 	}
 
 	/**
-	 * @deprecated
-	 * @see Internet::getIP()
-	 *
 	 * @param bool $force default false, force IP check even when cached
 	 *
 	 * @return string
+	 *@deprecated
+	 * @see Internet::getIP()
+	 *
 	 */
 
-	public static function getIP($force = false){
+	public static function getIP(bool $force = false): string
+	{
 		return Internet::getIP($force);
 	}
 
@@ -175,11 +177,12 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function getOS($recalculate = false){
+	public static function getOS(bool $recalculate = false): string
+	{
 		if(self::$os === null or $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
-				if(strpos(php_uname("m"), "iP") === 0){
+				if(str_starts_with(php_uname("m"), "iP")){
 					self::$os = "ios";
 				}else{
 					self::$os = "mac";
@@ -206,7 +209,8 @@ class Utils{
 	/**
 	 * @return array
 	 */
-	public static function getRealMemoryUsage(){
+	public static function getRealMemoryUsage(): array
+	{
 		$stack = 0;
 		$heap = 0;
 
@@ -214,9 +218,9 @@ class Utils{
 			$mappings = file("/proc/self/maps");
 			foreach($mappings as $line){
 				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-					if(strpos($matches[3], "heap") === 0){
+					if(str_starts_with($matches[3], "heap")){
 						$heap += hexdec($matches[2]) - hexdec($matches[1]);
-					}elseif(strpos($matches[3], "stack") === 0){
+					}elseif(str_starts_with($matches[3], "stack")){
 						$stack += hexdec($matches[2]) - hexdec($matches[1]);
 					}
 				}
@@ -231,7 +235,8 @@ class Utils{
 	 *
 	 * @return array|int|null
 	 */
-	public static function getMemoryUsage($advanced = false){
+	public static function getMemoryUsage(bool $advanced = false): float|array|int|null
+	{
 		$reserved = memory_get_usage();
 		$VmSize = null;
 		$VmRSS = null;
@@ -266,7 +271,8 @@ class Utils{
 	/**
 	 * @return int
 	 */
-	public static function getThreadCount(){
+	public static function getThreadCount(): int
+	{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
 			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
 				return (int) $matches[1];
@@ -282,7 +288,8 @@ class Utils{
 	 *
 	 * @return int
 	 */
-	public static function getCoreCount($recalculate = false){
+	public static function getCoreCount(bool $recalculate = false): int
+	{
 		static $processors = 0;
 
 		if($processors > 0 and !$recalculate){
@@ -325,7 +332,8 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function hexdump($bin){
+	public static function hexdump(string $bin): string
+	{
 		$output = "";
 		$bin = str_split($bin, 16);
 		foreach($bin as $counter => $line){
@@ -341,8 +349,9 @@ class Utils{
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
 	 * @param mixed $str
+	 * @return string
 	 */
-	public static function printable($str) : string{
+	public static function printable(mixed $str) : string{
 		if(!is_string($str)){
 			return gettype($str);
 		}
@@ -363,40 +372,47 @@ class Utils{
 	}*/
 
 	/**
-	 * @deprecated
+	 * @param       $page
+	 * @param int $timeout default 10
+	 * @param array $extraHeaders
+	 * @param null $err
+	 * @param null $headers
+	 * @param null $httpCode
+	 * @return string|bool
 	 * @see Internet::getURL()
 	 *
-	 * @param       $page
-	 * @param int   $timeout default 10
-	 * @param array $extraHeaders
-	 *
-	 * @return bool|mixed
+	 * @deprecated
 	 */
-	public static function getURL($page, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function getURL($page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null): string|bool
+	{
 		return Internet::getURL($page, $timeout, $extraHeaders, $err, $headers, $httpCode);
 	}
 
 	/**
-	 * @deprecated
-	 * @see Internet::postURL()
-	 *
 	 * @param              $page
 	 * @param array|string $args
-	 * @param int          $timeout
-	 * @param array        $extraHeaders
+	 * @param int $timeout
+	 * @param array $extraHeaders
+	 * @param null $err
+	 * @param null $headers
+	 * @param null $httpCode
+	 * @return string|bool
+	 * @see Internet::postURL()
 	 *
-	 * @return bool|mixed
+	 * @deprecated
 	 */
-	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function postURL($page, array|string $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null): string|bool
+	{
 		return Internet::postURL($page, $args, $timeout, $extraHeaders, $err, $headers, $httpCode);
 	}
 
 	/**
 	 * @param $string
 	 *
-	 * @return int
+	 * @return float|int
 	 */
-	public static function javaStringHash($string){
+	public static function javaStringHash($string): float|int
+	{
 		$hash = 0;
 		for($i = 0; $i < strlen($string); $i++){
 			$ord = ord($string[$i]);
@@ -444,11 +460,12 @@ class Utils{
 
 	/**
 	 * @param object $value
-	 * @param bool   $includeCurrent
+	 * @param bool $includeCurrent
 	 *
 	 * @return int
 	 */
-	public static function getReferenceCount($value, $includeCurrent = true){
+	public static function getReferenceCount(object $value, bool $includeCurrent = true): int
+	{
 		ob_start();
 		debug_zval_dump($value);
 		$contents = ob_get_contents();
@@ -465,7 +482,8 @@ class Utils{
 	/**
 	 * @deprecated
 	 */
-	public static function getTrace($start = 0, $trace = null){
+	public static function getTrace($start = 0, $trace = null): array
+	{
 		if($trace === null){
 			if(function_exists("xdebug_get_function_stack")){
 				$trace = array_reverse(xdebug_get_function_stack());
@@ -497,7 +515,7 @@ class Utils{
 	}
 
 	/**
-	 * @param mixed[][] $trace
+	 * @param array[] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
 	 *
 	 * @return string[]
@@ -507,11 +525,7 @@ class Utils{
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
 			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
-				if(isset($trace[$i]["args"])){
-					$args = $trace[$i]["args"];
-				}else{
-					$args = $trace[$i]["params"];
-				}
+				$args = $trace[$i]["args"] ?? $trace[$i]["params"];
 
 				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
 					if(is_object($value)){
@@ -532,7 +546,7 @@ class Utils{
 	}
 
 	/**
-	 * @return mixed[][]
+	 * @return array[]
 	 * @phpstan-return list<array<string, mixed>>
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
@@ -562,7 +576,8 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function cleanPath($path){
+	public static function cleanPath(string $path): string
+	{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
@@ -573,7 +588,7 @@ class Utils{
 		];
 		foreach($cleanPaths as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
-			if(strpos($result, $cleanPath) === 0){
+			if(str_starts_with($result, $cleanPath)){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
 		}

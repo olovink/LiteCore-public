@@ -27,24 +27,24 @@ use function time;
 
 class ServerKiller extends Thread{
 
-	public $time;
+	public int $time;
 
 	/** @var bool */
-	private $stopped = false;
+	private bool $stopped = false;
 
 	/**
 	 * ServerKiller constructor.
 	 *
 	 * @param int $time
 	 */
-	public function __construct($time = 15){
+	public function __construct(int $time = 15){
 		$this->time = $time;
 	}
 
 	public function run(){
 		$this->registerClassLoader();
 		$start = time();
-		$this->synchronized(function(){
+		$this->synchronized(function() : void {
 			if(!$this->stopped){
 			    $this->wait($this->time * 1000000);
 		    }
@@ -56,7 +56,7 @@ class ServerKiller extends Thread{
 	}
 
 	public function quit() : void{
-		$this->synchronized(function() : void{
+		$this->synchronized(function() : void {
 			$this->stopped = true;
 			$this->notify();
 		});
@@ -66,7 +66,8 @@ class ServerKiller extends Thread{
 	/**
 	 * @return string
 	 */
-	public function getThreadName(){
+	public function getThreadName(): string
+	{
 		return "Server Killer";
 	}
 }

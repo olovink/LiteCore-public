@@ -21,6 +21,7 @@
 
 namespace pocketmine\network\mcpe;
 
+use Exception;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\Network;
 use pocketmine\network\AdvancedSourceInterface;
@@ -37,6 +38,7 @@ use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
+use Throwable;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/**
@@ -69,24 +71,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/** @var SleeperNotifier */
 	private $sleeper;
 
-	/** @var RaklibPacketLogger */
-	private $packetLogger = null;
-
 	public function __construct(Server $server){
 		$this->server = $server;
 
 		$this->sleeper = new SleeperNotifier();
-
-		$isEnable = (bool) $this->server->getProperty("debug.logs", false);
-		if ($isEnable !== false) {
-			$this->packetLogger = new RaklibPacketLogger(
-			    $this->server->getDataPath()."logs".DIRECTORY_SEPARATOR
-		    );
-		    $this->packetLogger->start(PTHREADS_INHERIT_NONE);
-		}else{
-			$logger = $this->server->getLogger();
-			$logger->notice("Логи пакетов выключены.");
-		}
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
@@ -110,11 +98,14 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->network = $network;
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function process() : void{
 		while($this->interface->handlePacket()){}
 
 		if(!$this->rakLib->isRunning() and !$this->rakLib->isShutdown()){
-			throw new \Exception("RakLib Thread crashed");
+			throw new Exception("RakLib Thread crashed");
 		}
 	}
 
@@ -150,9 +141,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->emergencyShutdown();
 
-		if($this->packetLogger !== null){
-			$this->packetLogger->shutdown();
-		}
+		$this->packetLogger?->shutdown();
 	}
 
 	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
@@ -176,14 +165,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
 
-					if($this->packetLogger !== null){
-						$this->packetLogger->putPacket($address, $packet->buffer);
-					}
+					$this->packetLogger?->putPacket($address, $packet->buffer);
 
 					$pk->decode();
 					$player->handleDataPacket($pk);
 				}
-			}catch(\Throwable $e){
+			}catch(Throwable $e){
 				$logger = $this->server->getLogger();
 				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($packet->buffer));
 				$logger->logException($e);

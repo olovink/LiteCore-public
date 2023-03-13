@@ -29,26 +29,26 @@ namespace pocketmine\utils;
  */
 final class TextFormatJsonObject implements \JsonSerializable{
 	/** @var string|null */
-	public $text = null;
+	public ?string $text = null;
 	/** @var string|null */
-	public $color = null;
+	public ?string $color = null;
 	/** @var bool|null */
-	public $bold = null;
+	public ?bool $bold = null;
 	/** @var bool|null */
-	public $italic = null;
+	public ?bool $italic = null;
 	/** @var bool|null */
-	public $underlined = null;
+	public ?bool $underlined = null;
 	/** @var bool|null */
-	public $strikethrough = null;
+	public ?bool $strikethrough = null;
 	/** @var bool|null */
-	public $obfuscated = null;
+	public ?bool $obfuscated = null;
 	/**
 	 * @var TextFormatJsonObject[]|null
 	 * @phpstan-var array<int, TextFormatJsonObject>|null
 	 */
-	public $extra = null;
+	public ?array $extra = null;
 
-	public function jsonSerialize(){
+	public function jsonSerialize(): array {
 		$result = (array) $this;
 		foreach($result as $k => $v){
 			if($v === null){
