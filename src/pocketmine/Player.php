@@ -315,9 +315,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var int */
 	protected $lastEnderPearlUse = 0;
 
-	/** @var gcode */
-	public $antibot;
-
 	/**
 	 * @param FishingHook $entity
 	 *

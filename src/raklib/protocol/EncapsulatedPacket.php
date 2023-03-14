@@ -99,7 +99,9 @@ class EncapsulatedPacket{
 	}
 
 	/**
-	 * @param int    $offset reference parameter
+	 * @param string $binary
+	 * @param int|null $offset reference parameter
+	 * @return EncapsulatedPacket
 	 */
 	public static function fromBinary(string $binary, ?int &$offset = null) : EncapsulatedPacket{
 

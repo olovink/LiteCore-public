@@ -131,17 +131,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function shutdown(){
 		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->shutdown();
-
-		if($this->packetLogger !== null){
-			$this->packetLogger->shutdown();
-		}
 	}
 
 	public function emergencyShutdown(){
 		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->emergencyShutdown();
 
-		$this->packetLogger?->shutdown();
 	}
 
 	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
@@ -164,8 +159,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
-
-					$this->packetLogger?->putPacket($address, $packet->buffer);
 
 					$pk->decode();
 					$player->handleDataPacket($pk);
