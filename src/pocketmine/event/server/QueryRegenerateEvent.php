@@ -21,6 +21,7 @@
 
 namespace pocketmine\event\server;
 
+use pocketmine\PocketInfo;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 
@@ -79,7 +80,7 @@ class QueryRegenerateEvent extends ServerEvent {
 
 		$this->gametype = ($server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
-		$this->server_engine = $server->getName() . " (" . $server->getCodename() . ")";
+		$this->server_engine = $server->getName() . " - " . PocketInfo::CORE_VERSION;
 		$this->map = $server->getDefaultLevel() === null ? "unknown" : $server->getDefaultLevel()->getName();
 		$this->numPlayers = $poc;
 		$this->maxPlayers = $pc;

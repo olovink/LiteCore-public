@@ -316,7 +316,7 @@ class Server{
 	 * @return string
 	 */
 	public function getName() : string{
-        return \pocketmine\NAME;
+        return PocketInfo::NAME;
 	}
 
 	/**
@@ -362,11 +362,11 @@ class Server{
 	 * @return string
 	 */
 	public function getPocketMineVersion(){
-		return \pocketmine\VERSION;
+		return PocketInfo::VERSION;
 	}
 
 	public function getFormattedVersion($prefix = ""){
-		return (\pocketmine\VERSION !== ""? $prefix . \pocketmine\VERSION : "");
+		return (PocketInfo::VERSION !== ""? $prefix .  PocketInfo::VERSION : "");
 	}
 
 	/**
@@ -387,7 +387,7 @@ class Server{
 	 * @return string
 	 */
 	public function getCodename(){
-		return \pocketmine\CODENAME;
+		return PocketInfo::CODENAME;
 	}
 
 	/**
@@ -402,7 +402,7 @@ class Server{
 	 * @return string
 	 */
 	public function getApiVersion(){
-		return \pocketmine\API_VERSION;
+		return PocketInfo::API_VERSION;
 	}
 
 
@@ -410,7 +410,7 @@ class Server{
 	 * @return string
 	 */
 	public function getGeniApiVersion(){
-		return \pocketmine\GENISYS_API_VERSION;
+		return PocketInfo::GENISYS_API_VERSION;
 	}
 
 	/**
@@ -538,33 +538,24 @@ class Server{
 	 * @return string
 	 */
 	public static function getGamemodeString($mode){
-		switch((int) $mode){
-			case Player::SURVIVAL:
-				return "%gameMode.survival";
-			case Player::CREATIVE:
-				return "%gameMode.creative";
-			case Player::ADVENTURE:
-				return "%gameMode.adventure";
-			case Player::SPECTATOR:
-				return "%gameMode.spectator";
-		}
+		return match ((int)$mode) {
+			Player::SURVIVAL => "%gameMode.survival",
+			Player::CREATIVE => "%gameMode.creative",
+			Player::ADVENTURE => "%gameMode.adventure",
+			Player::SPECTATOR => "%gameMode.spectator",
+			default => "UNKNOWN",
+		};
 
-		return "UNKNOWN";
 	}
 
 	public static function getGamemodeName(int $mode) : string{
-		switch($mode){
-			case Player::SURVIVAL:
-				return "Survival";
-			case Player::CREATIVE:
-				return "Creative";
-			case Player::ADVENTURE:
-				return "Adventure";
-			case Player::SPECTATOR:
-				return "Spectator";
-			default:
-				throw new \InvalidArgumentException("Invalid gamemode $mode");
-		}
+		return match ($mode) {
+			Player::SURVIVAL => "Survival",
+			Player::CREATIVE => "Creative",
+			Player::ADVENTURE => "Adventure",
+			Player::SPECTATOR => "Spectator",
+			default => throw new \InvalidArgumentException("Invalid gamemode $mode"),
+		};
 	}
 
 	/**
@@ -575,29 +566,13 @@ class Server{
 	 * @return int
 	 */
 	public static function getGamemodeFromString($str){
-		switch(strtolower(trim($str))){
-			case (string) Player::SURVIVAL:
-			case "survival":
-			case "s":
-				return Player::SURVIVAL;
-
-			case (string) Player::CREATIVE:
-			case "creative":
-			case "c":
-				return Player::CREATIVE;
-
-			case (string) Player::ADVENTURE:
-			case "adventure":
-			case "a":
-				return Player::ADVENTURE;
-
-			case (string) Player::SPECTATOR:
-			case "spectator":
-			case "view":
-			case "v":
-				return Player::SPECTATOR;
-		}
-		return -1;
+		return match (strtolower(trim($str))) {
+			(string)Player::SURVIVAL, "survival", "s" => Player::SURVIVAL,
+			(string)Player::CREATIVE, "creative", "c" => Player::CREATIVE,
+			(string)Player::ADVENTURE, "adventure", "a" => Player::ADVENTURE,
+			(string)Player::SPECTATOR, "spectator", "view", "v" => Player::SPECTATOR,
+			default => -1,
+		};
 	}
 
 	/**
@@ -606,28 +581,13 @@ class Server{
 	 * @return int
 	 */
 	public static function getDifficultyFromString($str){
-		switch(strtolower(trim($str))){
-			case "0":
-			case "peaceful":
-			case "p":
-				return 0;
-
-			case "1":
-			case "easy":
-			case "e":
-				return 1;
-
-			case "2":
-			case "normal":
-			case "n":
-				return 2;
-
-			case "3":
-			case "hard":
-			case "h":
-				return 3;
-		}
-		return -1;
+		return match (strtolower(trim($str))) {
+			"0", "peaceful", "p" => 0,
+			"1", "easy", "e" => 1,
+			"2", "normal", "n" => 2,
+			"3", "hard", "h" => 3,
+			default => -1,
+		};
 	}
 
 	/**
@@ -1355,15 +1315,11 @@ class Server{
 		if(is_bool($value)){
 			return $value;
 		}
-		switch(strtolower($value)){
-			case "on":
-			case "true":
-			case "1":
-			case "yes":
-				return true;
-		}
+		return match (strtolower($value)) {
+			"on", "true", "1", "yes" => true,
+			default => false,
+		};
 
-		return false;
 	}
 
 	/**
@@ -1619,16 +1575,6 @@ class Server{
 		return $this->version->getRelease();
 	}
 
-	public function checkup(){
-		$check = file_get_contents('http://khismatov.ru/a.txt');
-		$check1 = str_replace(' ', '', $check);
-		if (\pocketmine\CORE_VERSION == $check1) {
-			$this->getLogger()->warning('У Вас стоит актуальная версия ядра LiteCore-mod');
-		}elseif (\pocketmine\CORE_VERSION < $check1) {
-			$this->getLogger()->warning('У Вас стоит устаревшая версия ядра LiteCore-mod');
-		}
-	}
-
 	/**
 	 * @param \ClassLoader    $autoloader
 	 * @param \ThreadedLogger $logger
@@ -1668,8 +1614,6 @@ class Server{
 			$version = new VersionString($this->getPocketMineVersion());
 			$this->version = $version;
 
-			//$this->checkup();
-
 			$this->logger->info("Loading properties and configuration...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
@@ -1695,14 +1639,6 @@ class Server{
 			$this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
 			$nowLang = $this->getProperty("settings.language", "rus");
 
-			//Crashes unsupported builds without the correct configuration
-			if(strpos(\pocketmine\VERSION, "unsupported") !== false and getenv("CI") === false){
-				if($this->getProperty("settings.enable-testing", false) !== true){
-					throw new ServerException("This build is not intended for production use. You may set 'settings.enable-testing: true' under pocketmine.yml to allow use of non-production builds. Do so at your own risk and ONLY if you know what you are doing.");
-				}else{
-					$this->logger->warning("You are using an unsupported build. Do not use this build in a production environment.");
-				}
-			}
 			if($defaultLang != "unknown" and $nowLang != $defaultLang){
 				@file_put_contents($configPath, str_replace('language: "' . $nowLang . '"', 'language: "' . $defaultLang . '"', file_get_contents($configPath)));
 				$this->config->reload();

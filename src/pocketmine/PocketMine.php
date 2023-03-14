@@ -80,20 +80,12 @@ namespace pocketmine {
 	use pocketmine\wizard\Installer;
 	use raklib\RakLib;
 
-	const NAME = "LiteCore";
-	const VERSION = "1.1.X";
-	const API_VERSION = "3.0.1";
-	const CODENAME = "vk.com/litecore_team";
-	const GENISYS_API_VERSION = '2.0.0';
-	const CORE_VERSION = '1.0.9-release';
-
-	const MIN_PHP_VERSION = "7.3.0";
-
 	/**
 	 * @param string $message
 	 * @return void
 	 */
-	function critical_error($message){
+	function critical_error(string $message): void
+	{
 		echo "[ERROR] $message" . PHP_EOL;
 	}
 
@@ -104,8 +96,8 @@ namespace pocketmine {
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
 
-	if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
-		echo "[CRITICAL] " . \pocketmine\NAME . " requires PHP " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "." . PHP_EOL;
+	if(version_compare("7.3.0", PHP_VERSION) > 0){
+		echo "[CRITICAL] " . PocketInfo::NAME . " requires PHP 7.3.0, but you have PHP " . PHP_VERSION . "." . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
@@ -220,13 +212,13 @@ namespace pocketmine {
 	$errors = 0;
 
 	if(PHP_INT_SIZE < 8){
-		critical_error("Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported.");
+		critical_error("Running " . PocketInfo::NAME . " with 32-bit systems/PHP is no longer supported.");
 		critical_error("Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.");
 		exit(1);
 	}
 
 	if(php_sapi_name() !== "cli"){
-		$logger->critical("You must run " . \pocketmine\NAME . " using the CLI.");
+		$logger->critical("You must run " . PocketInfo::NAME . " using the CLI.");
 		++$errors;
 	}
 
@@ -250,7 +242,7 @@ namespace pocketmine {
 	}
 
 	if(extension_loaded("xdebug")){
-		$logger->warning("You are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance.");
+		$logger->warning("You are running " . PocketInfo::NAME . " with xdebug enabled. This has a major impact on performance.");
 	}
 
 	if(!extension_loaded("pocketmine_chunkutils")){
@@ -307,7 +299,7 @@ namespace pocketmine {
 	}
 
 	if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
+		$logger->warning("Non-packaged " . PocketInfo::NAME . " installation detected. Consider using a phar in production for better performance.");
 	}
 	if(function_exists('opcache_get_status') && ($opcacheStatus = opcache_get_status(false)) !== false){
 		$jitEnabled = $opcacheStatus["jit"]["on"] ?? false;
