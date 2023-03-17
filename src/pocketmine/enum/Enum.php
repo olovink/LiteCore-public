@@ -27,6 +27,11 @@ abstract class Enum
 		return (new ReflectionClass(get_called_class()))->getConstants();
 	}
 
+	static function get_constant($value): bool|int|string {
+		$constants = get_defined_constants();
+		return array_search($value, $constants, TRUE);
+	}
+
 	/**
 	 * Returns the name of the first constant with the given value or null if none is found.
 	 *

@@ -38,7 +38,7 @@ abstract class Timezone{
 				 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
 				 * an incorrect timezone abbreviation in php.ini apparently.
 				 */
-				if(!str_contains($timezone, "/")){
+				if(strpos($timezone, "/") === false){
 					$default_timezone = timezone_name_from_abbr($timezone);
 					if($default_timezone !== false){
 						ini_set("date.timezone", $default_timezone);
@@ -79,8 +79,7 @@ abstract class Timezone{
 		return $messages;
 	}
 
-	public static function detectSystemTimezone(): bool|string
-	{
+	public static function detectSystemTimezone(){
 		switch(Utils::getOS()){
 			case 'win':
 				$regex = '/(UTC)(\+*\-*\d*\d*\:*\d*\d*)/';
@@ -146,7 +145,7 @@ abstract class Timezone{
 			case 'mac':
 				if(is_link('/etc/localtime')){
 					$filename = readlink('/etc/localtime');
-					if(str_starts_with($filename, '/usr/share/zoneinfo/')){
+					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
 						$timezone = substr($filename, 20);
 						return trim($timezone);
 					}
@@ -164,14 +163,13 @@ abstract class Timezone{
 	 *
 	 * @return string|bool
 	 */
-	private static function parseOffset(string $offset): bool|string
-	{
+	private static function parseOffset($offset){
 		//Make signed offsets unsigned for date_parse
-		if(str_contains($offset, '-')){
+		if(strpos($offset, '-') !== false){
 			$negative_offset = true;
 			$offset = str_replace('-', '', $offset);
 		}else{
-			if(str_contains($offset, '+')){
+			if(strpos($offset, '+') !== false){
 				$negative_offset = false;
 				$offset = str_replace('+', '', $offset);
 			}else{
@@ -183,7 +181,7 @@ abstract class Timezone{
 		$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
 
 		//After date_parse is done, put the sign back
-		if($negative_offset){
+		if($negative_offset == true){
 			$offset = -abs($offset);
 		}
 

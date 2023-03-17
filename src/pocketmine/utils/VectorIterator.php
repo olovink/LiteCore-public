@@ -21,11 +21,9 @@
 
 namespace pocketmine\utils;
 
-use OutOfBoundsException;
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
-use SplFixedArray;
 
 /**
  * This class performs ray tracing and iterates along blocks on a line
@@ -34,28 +32,29 @@ class VectorIterator implements \Iterator {
 
 	/** @var ChunkManager */
 	private $level;
-	private int $maxDistance;
+	private $maxDistance;
 
-	private static int $gridSize = 16777216; //1 << 24
+	private static $gridSize = 16777216; //1 << 24
 
-	private bool $end = false;
+	private $end = false;
 
-	/** @var SplFixedArray<Vector3>[3] */
-	private SplFixedArray $positionQueue;
-	private int $currentBlock = 0;
-	private ?Vector3 $currentBlockObject = null;
-	private int $currentDistance = 0;
-	private int|float $maxDistanceInt = 0;
+	/** @var \SplFixedArray<Vector3>[3] */
+	private $positionQueue;
+	private $currentBlock = 0;
+	/** @var Vector3 */
+	private $currentBlockObject = null;
+	private $currentDistance = 0;
+	private $maxDistanceInt = 0;
 
-	private int $secondError;
-	private int $thirdError;
+	private $secondError;
+	private $thirdError;
 
-	private float $secondStep;
-	private float $thirdStep;
+	private $secondStep;
+	private $thirdStep;
 
-	private int $mainFace;
-	private int $secondFace;
-	private int $thirdFace;
+	private $mainFace;
+	private $secondFace;
+	private $thirdFace;
 
 	/**
 	 * VectorIterator constructor.
@@ -74,7 +73,7 @@ class VectorIterator implements \Iterator {
 		$maxDistance = $from->distance($to);
 		$this->level = $level;
 		$this->maxDistance = (int) $maxDistance;
-		$this->positionQueue = new SplFixedArray(3);
+		$this->positionQueue = new \SplFixedArray(3);
 
 		$startClone = new Vector3($from->x, $from->y, $from->z);
 
@@ -192,8 +191,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return bool
 	 */
-	private function posEquals(Vector3 $a, Vector3 $b): bool
-	{
+	private function posEquals(Vector3 $a, Vector3 $b){
 		return $a->x === $b->x and $a->y === $b->y and $a->z === $b->z;
 	}
 
@@ -202,8 +200,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return int
 	 */
-	private function getXFace(Vector3 $direction): int
-	{
+	private function getXFace(Vector3 $direction){
 		return (($direction->x) > 0) ? Vector3::SIDE_EAST : Vector3::SIDE_WEST;
 	}
 
@@ -212,8 +209,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return int
 	 */
-	private function getYFace(Vector3 $direction): int
-	{
+	private function getYFace(Vector3 $direction){
 		return (($direction->y) > 0) ? Vector3::SIDE_UP : Vector3::SIDE_DOWN;
 	}
 
@@ -222,8 +218,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return int
 	 */
-	private function getZFace(Vector3 $direction): int
-	{
+	private function getZFace(Vector3 $direction){
 		return (($direction->z) > 0) ? Vector3::SIDE_SOUTH : Vector3::SIDE_NORTH;
 	}
 
@@ -261,8 +256,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return mixed
 	 */
-	private function getPosition($direction, $position, $blockPosition): mixed
-	{
+	private function getPosition($direction, $position, $blockPosition){
 		return $direction > 0 ? ($position - $blockPosition) : ($blockPosition + 1 - $position);
 	}
 
@@ -273,8 +267,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return mixed
 	 */
-	private function getXPosition(Vector3 $direction, Vector3 $position, Vector3 $block): mixed
-	{
+	private function getXPosition(Vector3 $direction, Vector3 $position, Vector3 $block){
 		return $this->getPosition($direction->x, $position->x, $block->x);
 	}
 
@@ -285,8 +278,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return mixed
 	 */
-	private function getYPosition(Vector3 $direction, Vector3 $position, Vector3 $block): mixed
-	{
+	private function getYPosition(Vector3 $direction, Vector3 $position, Vector3 $block){
 		return $this->getPosition($direction->y, $position->y, $block->y);
 	}
 
@@ -297,8 +289,7 @@ class VectorIterator implements \Iterator {
 	 *
 	 * @return mixed
 	 */
-	private function getZPosition(Vector3 $direction, Vector3 $position, Vector3 $block): mixed
-	{
+	private function getZPosition(Vector3 $direction, Vector3 $position, Vector3 $block){
 		return $this->getPosition($direction->z, $position->z, $block->z);
 	}
 
@@ -306,20 +297,20 @@ class VectorIterator implements \Iterator {
 		$this->scan();
 
 		if($this->currentBlock <= -1){
-			throw new OutOfBoundsException;
+			throw new \OutOfBoundsException;
 		}else{
 			$this->currentBlockObject = $this->positionQueue[$this->currentBlock--];
 		}
 	}
 
 	/**
-	 * @return Vector3|null
+	 * @return Block
 	 *
+	 * @throws \OutOfBoundsException
 	 */
-	public function current(): ?Vector3
-	{
+	public function current(){
 		if($this->currentBlockObject === null){
-			throw new OutOfBoundsException;
+			throw new \OutOfBoundsException;
 		}
 		return $this->currentBlockObject;
 	}
@@ -331,16 +322,14 @@ class VectorIterator implements \Iterator {
 	/**
 	 * @return int
 	 */
-	public function key(): int
-	{
+	public function key(){
 		return $this->currentBlock - 1;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function valid(): bool
-	{
+	public function valid(){
 		$this->scan();
 		return $this->currentBlock !== -1;
 	}

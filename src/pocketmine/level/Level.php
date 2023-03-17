@@ -859,7 +859,6 @@ class Level implements ChunkManager, Metadatable{
             $this->sendTimeTicker = 0;
         }
 
-        $this->weather->calcWeather($currentTick);
 
         $this->unloadChunks();
         if(++$this->providerGarbageCollectionTicker >= 6000){
@@ -1083,21 +1082,20 @@ class Level implements ChunkManager, Metadatable{
     /**
 	 * @return void
 	 */
-    public function clearCache(bool $force = false) {
-        if($force){
-            $this->chunkCache = [];
-            $this->blockCache = [];
-        }else{
-            $count = 0;
+	public function clearCache(bool $force = false) : void{
+		if($force){
+			$this->blockCache = [];
+		}else{
+			$count = 0;
 			foreach($this->blockCache as $list){
 				$count += count($list);
 				if($count > 2048){
 					$this->blockCache = [];
 					break;
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 
     /**
      * @return void
@@ -1184,7 +1182,7 @@ class Level implements ChunkManager, Metadatable{
                     }
                 }
             }
-            
+
             skip_to_next: //dummy label to break out of nested loops
         }
 
@@ -1495,7 +1493,7 @@ class Level implements ChunkManager, Metadatable{
      */
     public function getRealBlockSkyLightAt(int $x, int $y, int $z) : int{
         $light = $this->getBlockSkyLightAt($x, $y, $z) - $this->skyLightReduction;
-        return $light < 0 ? 0 : $light;
+        return max($light, 0);
     }
 
     /**
@@ -1899,11 +1897,9 @@ class Level implements ChunkManager, Metadatable{
                             break;
                     }
                 }
-                switch ($target->getId()) {
-                    case Block::MONSTER_SPAWNER:
-                        $exp = mt_rand(15, 43);
-                        break;
-                }
+				if ($target->getId() == Block::MONSTER_SPAWNER) {
+					$exp = mt_rand(15, 43);
+				}
                 if ($exp > 0) {
                     $this->spawnXPOrb($vector->add(0, 1, 0), $exp);
                 }

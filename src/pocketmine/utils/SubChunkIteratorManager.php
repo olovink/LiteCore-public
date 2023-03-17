@@ -28,21 +28,21 @@ use pocketmine\level\format\SubChunkInterface;
 
 class SubChunkIteratorManager{
 	/** @var ChunkManager */
-	public ChunkManager $level;
+	public $level;
 
 	/** @var Chunk|null */
-	public ?Chunk $currentChunk;
+	public $currentChunk;
 	/** @var SubChunkInterface|null */
-	public ?SubChunkInterface $currentSubChunk;
+	public $currentSubChunk;
 
 	/** @var int */
-	protected int $currentX;
+	protected $currentX;
 	/** @var int */
-	protected int $currentY;
+	protected $currentY;
 	/** @var int */
-	protected int $currentZ;
+	protected $currentZ;
 	/** @var bool */
-	protected bool $allocateEmptySubs = true;
+	protected $allocateEmptySubs = true;
 
 	public function __construct(ChunkManager $level, bool $allocateEmptySubs = true){
 		$this->level = $level;

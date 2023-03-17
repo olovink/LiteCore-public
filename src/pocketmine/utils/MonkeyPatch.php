@@ -21,15 +21,11 @@
 
 namespace pocketmine\utils;
 
-class ReversePriorityQueue extends \SplPriorityQueue {
-
+class MonkeyPatch {
 	/**
-	 * @param mixed $priority1
-	 * @param mixed $priority2
-	 *
-	 * @return int
+	 * MonkeyPatch constructor.
 	 */
-	public function compare($priority1, $priority2){
-		return (int) -($priority1 - $priority2);
+	public function __construct(){
+
 	}
 }

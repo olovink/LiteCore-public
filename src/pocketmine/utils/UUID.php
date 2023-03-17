@@ -21,27 +21,25 @@
 
 namespace pocketmine\utils;
 
-use InvalidArgumentException;
-
 class UUID {
 
-	private array $parts;
-	private int $version;
+	private $parts;
+	private $version;
 
 	/**
 	 * UUID constructor.
 	 *
-	 * @param int $part1
-	 * @param int $part2
-	 * @param int $part3
-	 * @param int $part4
+	 * @param int  $part1
+	 * @param int  $part2
+	 * @param int  $part3
+	 * @param int  $part4
 	 * @param null $version
 	 */
-	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, $version = null){
-		$this->parts[0] = $part1;
-		$this->parts[1] = $part2;
-		$this->parts[2] = $part3;
-		$this->parts[3] = $part4;
+	public function __construct($part1 = 0, $part2 = 0, $part3 = 0, $part4 = 0, $version = null){
+		$this->parts[0] = (int) $part1;
+		$this->parts[1] = (int) $part2;
+		$this->parts[2] = (int) $part3;
+		$this->parts[3] = (int) $part4;
 
 		$this->version = $version === null ? ($this->parts[1] & 0xf000) >> 12 : (int) $version;
 	}
@@ -49,8 +47,7 @@ class UUID {
 	/**
 	 * @return int|null
 	 */
-	public function getVersion(): ?int
-	{
+	public function getVersion(){
 		return $this->version;
 	}
 
@@ -59,8 +56,7 @@ class UUID {
 	 *
 	 * @return bool
 	 */
-	public function equals(UUID $uuid): bool
-	{
+	public function equals(UUID $uuid){
 		return $uuid->parts === $this->parts;
 	}
 
@@ -68,16 +64,15 @@ class UUID {
 	 * Creates an UUID from an hexadecimal representation
 	 *
 	 * @param string $uuid
-	 * @param int|null $version
+	 * @param int    $version
 	 *
 	 * @return UUID
 	 */
-	public static function fromString(string $uuid, int $version = null): UUID
-	{
+	public static function fromString($uuid, $version = null){
 		//TODO: should we be stricter about the notation (8-4-4-4-12)?
 		$binary = @hex2bin(str_replace("-", "", trim($uuid)));
 		if($binary === false){
-			throw new InvalidArgumentException("Invalid hex string UUID representation");
+			throw new \InvalidArgumentException("Invalid hex string UUID representation");
 		}
 		return self::fromBinary($binary, $version);
 	}
@@ -86,14 +81,13 @@ class UUID {
 	 * Creates an UUID from a binary representation
 	 *
 	 * @param string $uuid
-	 * @param int|null $version
+	 * @param int    $version
 	 *
 	 * @return UUID
 	 */
-	public static function fromBinary(string $uuid, int $version = null): UUID
-	{
+	public static function fromBinary($uuid, $version = null){
 		if(strlen($uuid) !== 16){
-			throw new InvalidArgumentException("Must have exactly 16 bytes");
+			throw new \InvalidArgumentException("Must have exactly 16 bytes");
 		}
 
 		return new UUID(Binary::readInt(substr($uuid, 0, 4)), Binary::readInt(substr($uuid, 4, 4)), Binary::readInt(substr($uuid, 8, 4)), Binary::readInt(substr($uuid, 12, 4)), $version);
@@ -106,8 +100,7 @@ class UUID {
 	 *
 	 * @return UUID
 	 */
-	public static function fromData(...$data): UUID
-	{
+	public static function fromData(...$data){
 		$hash = hash("md5", implode($data), true);
 
 		return self::fromBinary($hash, 3);
@@ -116,24 +109,21 @@ class UUID {
 	/**
 	 * @return UUID
 	 */
-	public static function fromRandom(): UUID
-	{
+	public static function fromRandom(){
 		return self::fromData(Binary::writeInt(time()), Binary::writeShort(getmypid()), Binary::writeShort(getmyuid()), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)));
 	}
 
 	/**
 	 * @return string
 	 */
-	public function toBinary(): string
-	{
+	public function toBinary(){
 		return Binary::writeInt($this->parts[0]) . Binary::writeInt($this->parts[1]) . Binary::writeInt($this->parts[2]) . Binary::writeInt($this->parts[3]);
 	}
 
 	/**
 	 * @return string
 	 */
-	public function toString(): string
-	{
+	public function toString(){
 		$hex = bin2hex($this->toBinary());
 
 		//xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx 8-4-4-12
@@ -148,11 +138,11 @@ class UUID {
 	}
 
 	/**
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function getPart(int $partNumber) : int{
 		if($partNumber < 0 or $partNumber > 3){
-			throw new InvalidArgumentException("Invalid UUID part index $partNumber");
+			throw new \InvalidArgumentException("Invalid UUID part index $partNumber");
 		}
 		return $this->parts[$partNumber];
 	}

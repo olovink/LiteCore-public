@@ -22,27 +22,29 @@
 namespace pocketmine\utils;
 
 
+use pocketmine\PocketInfo;
+
 /**
  * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString {
 	/** @var int */
-	private int $generation;
+	private $generation;
 	/** @var int */
-	private int $major;
+	private $major;
 	/** @var int */
-	private int $minor;
+	private $minor;
 	/** @var int */
-	private int $build;
+	private $build;
 	/** @var bool */
-	private bool $development = false;
+	private $development = false;
 
 	/**
 	 * VersionString constructor.
 	 *
 	 * @param string $version
 	 */
-	public function __construct(string $version = \pocketmine\VERSION){
+	public function __construct($version = PocketInfo::VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
 			$this->major = ($version >> 5) & 0x0F;
@@ -66,56 +68,49 @@ class VersionString {
 	/**
 	 * @deprecated
 	 */
-	public function getStage(): string
-	{
+	public function getStage(){
 		return "final";
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getGeneration(): int
-	{
+	public function getGeneration(){
 		return $this->generation;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getMajor(): int
-	{
+	public function getMajor(){
 		return $this->major;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getMinor(): int
-	{
+	public function getMinor(){
 		return $this->minor;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getRelease(): string
-	{
+	public function getRelease(){
 		return $this->generation . "." . $this->major . ($this->minor > 0 ? "." . $this->minor : "");
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getBuild(): int
-	{
+	public function getBuild(){
 		return $this->build;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isDev(): bool
-	{
+	public function isDev(){
 		return $this->development === true;
 	}
 
@@ -124,8 +119,7 @@ class VersionString {
 	 *
 	 * @return string
 	 */
-	public function get(bool $build = false): string
-	{
+	public function get($build = false){
 		return $this->getRelease() . ($this->development === true ? "dev" : "") . (($this->build > 0 and $build === true) ? "-" . $this->build : "");
 	}
 
@@ -142,8 +136,7 @@ class VersionString {
 	 *
 	 * @return int
 	 */
-	public function compare($target, bool $diff = false): int
-	{
+	public function compare($target, $diff = false){
 		if(($target instanceof VersionString) === false){
 			$target = new VersionString($target);
 		}
