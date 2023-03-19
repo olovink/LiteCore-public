@@ -23,13 +23,18 @@ namespace pocketmine\plugin;
 
 use LogLevel;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class PluginLogger implements \AttachableLogger {
 
 	private $pluginName;
 
+	private $defaultName;
+
 	/** @var \LoggerAttachment[] */
 	private $attachments = [];
+
+	private $prefix;
 
 	/**
 	 * @param \LoggerAttachment $attachment
@@ -60,13 +65,23 @@ class PluginLogger implements \AttachableLogger {
 	 * @param Plugin $context
 	 */
 	public function __construct(Plugin $context){
-		$prefix = $context->getDescription()->getPrefix();
-		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";
+		$this->prefix = $context->getDescription()->getPrefix();
+		$this->defaultName = $context->getDescription()->getName();
+		$this->pluginName = $this->prefix != null ? "[$this->prefix] " : "[" . $context->getDescription()->getName() . "] ";
 	}
 
 	public function setName($name) {
-		$this->pluginName = "[" . $name . "] ";
+		$this->pluginName = $name != null ? "[" . $name . TextFormat::RESET ."] " : "[" . $this->getDefaultName() . TextFormat::RESET ."] ";
 	}
+
+	public function getPrefix(): ?string{
+		return $this->prefix;
+	}
+
+	public function getDefaultName(): string{
+		return $this->defaultName;
+	}
+
 	/**
 	 * @param string $message
 	 */
