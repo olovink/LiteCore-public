@@ -70,20 +70,12 @@ class QueryRegenerateEvent extends ServerEvent {
 				$this->players[] = $player;
 			}
 		}
-
-		if($server->isDServerEnabled() and $server->dserverConfig["queryMaxPlayers"]) $pc = $server->dserverConfig["queryMaxPlayers"];
-		elseif($server->isDServerEnabled() and $server->dserverConfig["queryAllPlayers"]) $pc = $server->getDServerMaxPlayers();
-		else $pc = $server->getMaxPlayers();
-
-		if($server->isDServerEnabled() and $server->dserverConfig["queryPlayers"]) $poc = $server->getDServerOnlinePlayers();
-		else $poc = count($this->players);
-
 		$this->gametype = ($server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
-		$this->server_engine = $server->getName() . " - " . PocketInfo::CORE_VERSION;
+		$this->server_engine = $server->getName() . " " . PocketInfo::CORE_VERSION;
 		$this->map = $server->getDefaultLevel() === null ? "unknown" : $server->getDefaultLevel()->getName();
-		$this->numPlayers = $poc;
-		$this->maxPlayers = $pc;
+		$this->numPlayers = count($this->players);
+		$this->maxPlayers = $server->getMaxPlayers();
 		$this->whitelist = $server->hasWhitelist() ? "on" : "off";
 		$this->port = $server->getPort();
 		$this->ip = $server->getIp();

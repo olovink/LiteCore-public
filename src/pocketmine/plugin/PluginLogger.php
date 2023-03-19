@@ -64,6 +64,9 @@ class PluginLogger implements \AttachableLogger {
 		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";
 	}
 
+	public function setName($name) {
+		$this->pluginName = "[" . $name . "] ";
+	}
 	/**
 	 * @param string $message
 	 */
