@@ -96,11 +96,11 @@ namespace pocketmine {
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
 
-	if(version_compare("7.3.0", PHP_VERSION) > 0){
-		echo "[CRITICAL] " . PocketInfo::NAME . " requires PHP 7.3.0, but you have PHP " . PHP_VERSION . "." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
-		exit(1);
-	}
+	if(version_compare("8.0.13", PHP_VERSION) > 0){
+        echo "[CRITICAL] This software requires PHP 8.0.13, but you have PHP " . PHP_VERSION . "." . PHP_EOL;
+        echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+        exit(1);
+    }
 
 	if(!extension_loaded("pthreads")){
 		echo "[CRITICAL] Unable to find the pthreads extension." . PHP_EOL;
