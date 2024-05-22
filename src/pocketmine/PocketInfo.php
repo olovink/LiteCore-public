@@ -2,9 +2,7 @@
 
 namespace pocketmine;
 
-use pocketmine\enum\Enum;
-
-abstract class PocketInfo extends Enum {
+final class PocketInfo {
 
 	const NAME = "LiteCore";
 	const VERSION = "1.1.X";
@@ -12,5 +10,5 @@ abstract class PocketInfo extends Enum {
 	const CODENAME = "vk.com/litecore_team";
 	const GENISYS_API_VERSION = '2.0.0';
 	const CORE_VERSION = '1.0.9-release';
-
+	
 }
