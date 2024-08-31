@@ -46,9 +46,9 @@ use function fseek;
 use function gettype;
 use function hash_file;
 use function implode;
+use function json_decode;
 use function preg_match;
 use function strlen;
-use function json_decode;
 
 class ZippedResourcePack implements ResourcePack{
 

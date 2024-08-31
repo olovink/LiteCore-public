@@ -21,8 +21,6 @@
 
 namespace pocketmine\utils;
 
-use pocketmine\Server;
-
 
 /**
  * Config Class for simple config manipulation of multiple formats.

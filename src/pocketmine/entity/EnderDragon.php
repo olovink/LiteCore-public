@@ -23,8 +23,8 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\Player;
 
 class EnderDragon extends Monster {
 

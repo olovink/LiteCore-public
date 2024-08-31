@@ -21,14 +21,13 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Arrow;
 use pocketmine\entity\Entity;
+use pocketmine\item\Durable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\TNTPrimeSound;
-use pocketmine\entity\Arrow;
-use pocketmine\item\Durable;
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;

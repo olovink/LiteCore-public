@@ -55,7 +55,6 @@ use function preg_replace;
 use function str_split;
 use function strpos;
 use function substr;
-use function time;
 use function zend_version;
 use function zlib_encode;
 use const E_COMPILE_ERROR;

@@ -31,8 +31,8 @@ use pocketmine\item\Potion;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ShortTag;
 
 abstract class Projectile extends Entity{
 

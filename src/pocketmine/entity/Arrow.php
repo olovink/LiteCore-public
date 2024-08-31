@@ -21,15 +21,14 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\item\Bow;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
-use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\MobSpellParticle;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\item\Bow;
 
 class Arrow extends Projectile {
 	const NETWORK_ID = 80;

@@ -21,11 +21,10 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\Player;
 use pocketmine\level\Level;
-use pocketmine\entity\Entity;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\Player;
 
 class EnderCrystal extends Vehicle{
 	

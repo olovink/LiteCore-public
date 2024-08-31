@@ -22,7 +22,6 @@
 namespace pocketmine\utils;
 
 use LogLevel;
-use pocketmine\Server;
 use pocketmine\Thread;
 use pocketmine\Worker;
 use function fclose;

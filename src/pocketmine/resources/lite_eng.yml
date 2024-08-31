@@ -10,7 +10,7 @@
 #
 #
 #
-#LiteCore Advanced Configuration File
+#GenisysPro Advanced Configuration File
 
 #Version of this file
 config:
@@ -104,32 +104,6 @@ redstone:
  frequency-pulse: false
  #Set the frequency of pulse. Default = 1s
  pulse-frequency: 1
-
-dserver:
- #The count of all multi-server unified
- enable: false
- #Update Query automatically
- query-auto-update: false
- #Update Query periodically
- query-tick-update: true
- #The max players' on the MOTD
- motd-max-players: 0
- #The max players' on the Query. 0=Default
- query-max-players: 0
- #Show the number of all players on MOTD
- motd-all-players: false
- #Show the number of all players on Query
- query-all-players: false
- #Show the number of online players on MOTD
- motd-players: false
- #Show the number of online players on Query
- query-players: false
- #Update Frequency. 20=1s
- time: 40
- #Auto-retry # of times when server fails
- retry-times: 3
- #the server list，Separate by ';'，e.g. 1.example.com:19132;2.example.com:19133
- server-list: ""
 
 inventory:
  #Set this to true if you have problems with anvils. This will process inventory transactions in a vanilla fashion with no anti-cheats or verification.

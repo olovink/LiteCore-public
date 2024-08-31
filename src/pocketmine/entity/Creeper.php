@@ -1,39 +1,19 @@
 <?php
 
-/*
- * _      _ _        _____               
- *| |    (_) |      / ____|              
- *| |     _| |_ ___| |     ___  _ __ ___ 
- *| |    | | __/ _ \ |    / _ \| '__/ _ \
- *| |____| | ||  __/ |___| (_) | | |  __/
- *|______|_|\__\___|\_____\___/|_|  \___|
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author genisyspromcpe
- * @link https://github.com/LiteCoreTeam/LiteCore
- *
- *
-*/
-
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\level\Explosion;
-use pocketmine\level\sound\TNTPrimeSound;
-use pocketmine\level\sound\ExplodeSound;
-use pocketmine\event\entity\ExplosionPrimeEvent;
-use pocketmine\item\Item as ItemItem;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\event\entity\CreeperPowerEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Item as ItemItem;
+use pocketmine\level\Explosion;
+use pocketmine\level\sound\ExplodeSound;
+use pocketmine\level\sound\TNTPrimeSound;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\math\Vector3;
 
 class Creeper extends Monster implements Explosive {
 	const NETWORK_ID = 33;

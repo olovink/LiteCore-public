@@ -111,32 +111,6 @@ redstone:
  #Установите частоту импульса. По умолчанию = 1 сек
  pulse-frequency: 1
 
-dserver:
- #Разрешает использовать мульти сервера
- enable: false
- #Обновление query автоматически
- query-auto-update: false
- #Периодически обновлять query
- query-tick-update: true
- #Отображает максимум игроков в MOTD. 0 = По умолчанию
- motd-max-players: 0
- #Отображает максимум игроков в Query. 0 = По умолчанию
- query-max-players: 0
- #Отображает всех игроков в MOTD
- motd-all-players: false
- #Отображает количество всех игроков в Query
- query-all-players: false
- #Отображает количество онлайн игроков в MOTD
- motd-players: false
- #Отображает количество онлайн игроков в Query
- query-players: false
- #Частота обновления. 20 = 1 сек
- time: 40
- #Авто-повтор N раз при сбое сервера
- retry-times: 3
- #Список серверов, отделяйте через ';', пример: 1.example.com:19132;2.example.com:19133
- server-list: ""
-
 inventory:
  #Установите значение false, если вам не нужен чаровальный стол и наковальни. Это не будет обрабатывать транзакции инвентаризации ванильным способом.
  allow-cheats: true

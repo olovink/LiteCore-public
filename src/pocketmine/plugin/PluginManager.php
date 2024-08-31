@@ -42,7 +42,6 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
-use pocketmine\utils\TextFormat;
 use function mb_strtoupper;
 
 /**

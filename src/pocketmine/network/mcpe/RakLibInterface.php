@@ -23,11 +23,11 @@ namespace pocketmine\network\mcpe;
 
 use Exception;
 use pocketmine\event\player\PlayerCreationEvent;
-use pocketmine\network\Network;
 use pocketmine\network\AdvancedSourceInterface;
+use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\Network;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;

@@ -24,10 +24,10 @@
 
 namespace pocketmine\tile;
 
-use pocketmine\inventory\BeaconInventory;
-use pocketmine\inventory\InventoryHolder;
 use pocketmine\block\Block;
 use pocketmine\entity\Effect;
+use pocketmine\inventory\BeaconInventory;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;

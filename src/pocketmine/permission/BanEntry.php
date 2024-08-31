@@ -21,8 +21,6 @@
 
 namespace pocketmine\permission;
 
-use pocketmine\utils\MainLogger;
-
 class BanEntry {
 	public static $format = "Y-m-d H:i:s O";
 

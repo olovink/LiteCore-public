@@ -21,12 +21,12 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\Level;
+use pocketmine\level\particle\SnowballPoofParticle;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\level\particle\SnowballPoofParticle;
 
 class Snowball extends Projectile {
 	const NETWORK_ID = 81;

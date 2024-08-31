@@ -22,8 +22,8 @@
 
 namespace pocketmine\event\level;
 
-use pocketmine\level\Level;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 
 /**
  * Called when a Chunk is loaded

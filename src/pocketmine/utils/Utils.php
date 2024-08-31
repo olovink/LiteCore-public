@@ -26,7 +26,6 @@
 namespace pocketmine\utils;
 
 use pocketmine\ThreadManager;
-use pocketmine\utils\MainLogger;
 
 /**
  * Big collection of functions

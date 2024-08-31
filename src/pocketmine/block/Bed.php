@@ -21,20 +21,20 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\Explosion;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 use pocketmine\tile\Bed as TileBed;
 use pocketmine\tile\Tile;
-use pocketmine\Player;
-use pocketmine\math\Vector3;
 use pocketmine\utils\TextFormat;
-use pocketmine\event\TranslationContainer;
 
 class Bed extends Transparent{
 	const BITFLAG_OCCUPIED = 0x04;

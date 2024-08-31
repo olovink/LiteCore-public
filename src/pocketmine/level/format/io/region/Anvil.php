@@ -30,10 +30,7 @@ use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
-};
-use pocketmine\Player;
+use pocketmine\nbt\tag\{ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag};
 use pocketmine\utils\MainLogger;
 use function zlib_decode;
 

@@ -28,12 +28,10 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
-use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\Player;
-use pocketmine\math\Vector3;
-use pocketmine\level\Level;
 
 class WitherSkeleton extends Monster {
 	const NETWORK_ID = 48;

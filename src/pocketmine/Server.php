@@ -47,8 +47,8 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentLevelTable;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
-use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\leveldb\LevelDB;
+use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\region\Anvil;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
@@ -77,26 +77,24 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\CompressBatchedTask;
-use pocketmine\network\Network;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
-use pocketmine\network\query\QueryHandler;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\RakLibInterface;
+use pocketmine\network\Network;
+use pocketmine\network\query\QueryHandler;
 use pocketmine\network\rcon\RCON;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\FolderPluginLoader;
+use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
-use pocketmine\scheduler\CallbackTask;
-use pocketmine\scheduler\DServerTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
@@ -181,7 +179,6 @@ class Server{
 
 	/** @var CommandReader */
 	private $console = null;
-	//private $consoleThreaded;
 
 	/** @var SimpleCommandMap */
 	private $commandMap = null;
@@ -260,8 +257,6 @@ class Server{
 	/** @var Level */
 	private $levelDefault = null;
 
-	//private $aboutContent = "";
-
 	/** Advanced Config */
 	public $advancedConfig = null;
 
@@ -280,9 +275,6 @@ class Server{
 	public $allowSnowGolem;
 	public $allowIronGolem;
 	public $autoClearInv = true;
-	public $dserverConfig = [];
-	public $dserverPlayers = 0;
-	public $dserverAllPlayers = 0;
 	public $redstoneEnabled = false;
 	public $allowFrequencyPulse = true;
 	public $anvilEnabled = false;
@@ -1503,20 +1495,6 @@ class Server{
 		$this->allowSnowGolem = $this->getAdvancedProperty("server.allow-snow-golem", false);
 		$this->allowIronGolem = $this->getAdvancedProperty("server.allow-iron-golem", false);
 		$this->autoClearInv = $this->getAdvancedProperty("player.auto-clear-inventory", true);
-		$this->dserverConfig = [
-			"enable" => $this->getAdvancedProperty("dserver.enable", false),
-			"queryAutoUpdate" => $this->getAdvancedProperty("dserver.query-auto-update", false),
-			"queryTickUpdate" => $this->getAdvancedProperty("dserver.query-tick-update", true),
-			"motdMaxPlayers" => $this->getAdvancedProperty("dserver.motd-max-players", 0),
-			"queryMaxPlayers" => $this->getAdvancedProperty("dserver.query-max-players", 0),
-			"motdAllPlayers" => $this->getAdvancedProperty("dserver.motd-all-players", false),
-			"queryAllPlayers" => $this->getAdvancedProperty("dserver.query-all-players", false),
-			"motdPlayers" => $this->getAdvancedProperty("dserver.motd-players", false),
-			"queryPlayers" => $this->getAdvancedProperty("dserver.query-players", false),
-			"timer" => $this->getAdvancedProperty("dserver.time", 40),
-			"retryTimes" => $this->getAdvancedProperty("dserver.retry-times", 3),
-			"serverList" => explode(";", $this->getAdvancedProperty("dserver.server-list", ""))
-		];
 		$this->redstoneEnabled = $this->getAdvancedProperty("redstone.enable", false);
 		$this->allowFrequencyPulse = $this->getAdvancedProperty("redstone.allow-frequency-pulse", false);
 		$this->pulseFrequency = $this->getAdvancedProperty("redstone.pulse-frequency", 20);
@@ -1535,32 +1513,6 @@ class Server{
 		$this->folderpluginloader = $this->getAdvancedProperty("developer.folder-plugin-loader", true);
 		$this->absorbWater = $this->getAdvancedProperty("server.absorb-water", false);
 
-	}
-
-	/**
-	 * @return int
-	 *
-	 * Get DServer max players
-	 */
-	public function getDServerMaxPlayers(){
-		return ($this->dserverAllPlayers + $this->getMaxPlayers());
-	}
-
-	/**
-	 * @return int
-	 *
-	 * Get DServer all online player count
-	 */
-	public function getDServerOnlinePlayers(){
-		return ($this->dserverPlayers + count($this->getOnlinePlayers()));
-	}
-
-	public function isDServerEnabled(){
-		return $this->dserverConfig["enable"];
-	}
-
-	public function updateDServerInfo(){
-		$this->scheduler->scheduleAsyncTask(new DServerTask($this->dserverConfig["serverList"], $this->dserverConfig["retryTimes"]));
 	}
 
 	public function getBuild(){
@@ -1939,16 +1891,6 @@ class Server{
 			}
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
-
-			if($this->dserverConfig["enable"] and ($this->getAdvancedProperty("dserver.server-list", "") != "")) $this->scheduler->scheduleRepeatingTask(new CallbackTask([
-				$this,
-				"updateDServerInfo"
-			]), $this->dserverConfig["timer"]);
-
-			if($cfgVer > $advVer){
-				$this->logger->notice("Your lite.yml needs update");
-				$this->logger->notice("Current Version: $advVer   Latest Version: $cfgVer");
-			}
 
 			$this->start();
 		}catch(\Throwable $e){
@@ -2370,12 +2312,10 @@ class Server{
 		}
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [self::getGamemodeString($this->getGamemode())]));
-
-		//TODO: Сообщение для донатика :D
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
-		if(!file_exists($this->getPluginPath() . DIRECTORY_SEPARATOR . "LiteCore"))
-			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "LiteCore");
+		if(!file_exists($this->getPluginPath() . DIRECTORY_SEPARATOR . "PocketMine-MP"))
+			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "PocketMine-MP");
 
 		$this->tickProcessor();
 		$this->forceShutdown();
@@ -2392,13 +2332,7 @@ class Server{
 		}
 	}
 
-	/**
-	 * @param mixed[][]|null $trace
-	 * @phpstan-param list<array<string, mixed>>|null $trace
-	 *
-	 * @return void
-	 */
-	public function exceptionHandler(\Throwable $e, $trace = null){
+	public function exceptionHandler(\Throwable $e, $trace = null): void{
 		while(@ob_end_flush()){}
 		global $lastError;
 
@@ -2607,12 +2541,6 @@ class Server{
 	}
 
 	private function checkTickUpdates(int $currentTick, float $tickTime) : void{
-		foreach($this->players as $p){
-			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
-				//$p->close("", "Login timeout");
-			}
-		}
-
 		//Do level ticks
 		foreach($this->levels as $k => $level){
 			if(!isset($this->levels[$k])){
@@ -2792,21 +2720,10 @@ class Server{
 			}
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
-
-			if(($this->dserverConfig["enable"] and $this->dserverConfig["queryTickUpdate"]) or !$this->dserverConfig["enable"]){
-				$this->updateQuery();
-			}
+			$this->updateQuery();
 
 			$this->network->updateName();
 			$this->network->resetStatistics();
-
-            if($this->dserverConfig["enable"] and $this->dserverConfig["motdPlayers"]){
-			    $max = $this->getDServerMaxPlayers();
-			    $online = $this->getDServerOnlinePlayers();
-			    $name = $this->getNetwork()->getName().'['.$online.'/'.$max.']';
-			    $this->getNetwork()->setName($name);
-			    //TODO: (Проверить, заполнен ли он, разные цвета статуса) 检测是否爆满,不同状态颜色
-			}
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){

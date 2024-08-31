@@ -1,5 +1,5 @@
 @echo off
-TITLE LiteCore
+TITLE PocketMine-MP
 
 if exist bin\php\php.exe (
 	set PHPRC=""
@@ -8,28 +8,24 @@ if exist bin\php\php.exe (
 	set PHP_BINARY=php
 )
 
-if exist LiteCore*.phar (
-	set POCKETMINE_FILE=LiteCore*.phar
+if exist PocketMine-MP*.phar (
+	set POCKETMINE_FILE=PocketMine-MP*.phar
 ) else (
-	if exist LiteCore.phar (
-		set POCKETMINE_FILE=LiteCore.phar
+	if exist PocketMine-MP.phar (
+		set POCKETMINE_FILE=PocketMine-MP.phar
 	) else (
-		if exist PocketMine-MP.phar (
-			set POCKETMINE_FILE=PocketMine-MP.phar
+	    if exist src\pocketmine\PocketMine.php (
+	        set POCKETMINE_FILE=src\pocketmine\PocketMine.php
 		) else (
-		    if exist src\pocketmine\PocketMine.php (
-		        set POCKETMINE_FILE=src\pocketmine\PocketMine.php
-			) else (
-		        echo Ядро установлено некорректно!
-		        pause
-		        exit 1
-		    )
+	        echo Ядро установлено некорректно!
+	        pause
+	        exit 1
 	    )
-	)
+    )
 )
 
 if exist bin\mintty.exe (
-	start "" bin\mintty.exe -o Columns=88 -o Rows=32 -o AllowBlinking=0 -o FontQuality=3 -o Font="Consolas" -o FontHeight=10 -o CursorType=0 -o CursorBlinks=1 -h error -t "LiteCore" -w max %PHP_BINARY% %POCKETMINE_FILE% --enable-ansi %*
+	start "" bin\mintty.exe -o Columns=88 -o Rows=32 -o AllowBlinking=0 -o FontQuality=3 -o Font="Consolas" -o FontHeight=10 -o CursorType=0 -o CursorBlinks=1 -h error -t "PocketMine-MP" -w max %PHP_BINARY% %POCKETMINE_FILE% --enable-ansi %*
 ) else (
 	REM pause on exitcode != 0 so the user can see what went wrong
 	%PHP_BINARY% %POCKETMINE_FILE% %* || pause

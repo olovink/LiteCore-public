@@ -27,10 +27,9 @@ use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\block\Block;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Lava extends Liquid {
 

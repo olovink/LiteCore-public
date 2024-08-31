@@ -23,8 +23,6 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Anvil;
 use pocketmine\block\Block;
-use pocketmine\block\Liquid;
-use pocketmine\block\Flowable;
 use pocketmine\block\SnowLayer;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;

@@ -25,9 +25,9 @@
 
 namespace pocketmine\math;
 
-use function sqrt;
 use function max;
 use function min;
+use function sqrt;
 
 abstract class Math{
 

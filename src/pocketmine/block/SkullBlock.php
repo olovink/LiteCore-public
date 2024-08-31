@@ -25,16 +25,14 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Skull as SkullTile;
-
 use pocketmine\tile\Tile;
 
 class SkullBlock extends Flowable {

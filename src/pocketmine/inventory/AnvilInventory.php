@@ -21,12 +21,12 @@
 
 namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
+use pocketmine\event\inventory\AnvilProcessEvent;
 use pocketmine\item\EnchantedBook;
+use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\event\inventory\AnvilProcessEvent;
 
 class AnvilInventory extends TemporaryInventory {
 

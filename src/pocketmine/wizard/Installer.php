@@ -60,7 +60,7 @@ class Installer {
 	 * @return bool
 	 */
 	public function run(){
-		echo "[*] LiteCore set-up wizard\n";
+		echo "[*] PocketMine-MP set-up wizard\n";
 		echo "[*] Please select a language:\n";
 		foreach(InstallerLang::$languages as $short => $native){
 			echo " $native => $short\n";

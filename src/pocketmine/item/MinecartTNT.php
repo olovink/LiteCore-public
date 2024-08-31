@@ -13,14 +13,13 @@
 
 namespace pocketmine\item;
 
-use pocketmine\entity\MinecartTNT as MinecartTNTEntity;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\block\Rail;
-use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\block\Block;
+use pocketmine\block\Rail;
+use pocketmine\entity\MinecartTNT as MinecartTNTEntity;
+use pocketmine\level\Level;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 class MinecartTNT extends Item {

@@ -24,13 +24,14 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use AllowDynamicProperties;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use function get_class;
 use function strlen;
 use function zlib_encode;
 use const ZLIB_ENCODING_DEFLATE;
+
 #ifndef COMPILE
-use pocketmine\utils\Binary;
 #endif
 
 #[AllowDynamicProperties] class BatchPacket extends DataPacket{

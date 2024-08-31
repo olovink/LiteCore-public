@@ -113,7 +113,6 @@ use pocketmine\Server;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
-use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
 
 #include <rules/Level.h>
@@ -407,7 +406,7 @@ class Level implements ChunkManager, Metadatable{
      *
      * @throws \Throwable
      */
-    public function __construct(Server $server, string $name, string $path, string $provider) {
+    public function __construct(Server $server, string $name, string $path, LevelProvider $provider) {
         $this->blockStates = Block::$fullList;
         $this->levelId = static::$levelIdCounter++;
         $this->blockMetadata = new BlockMetadataStore($this);
@@ -417,12 +416,9 @@ class Level implements ChunkManager, Metadatable{
         $this->folderName = $name;
         $this->timings = new LevelTimings($this);
 
-        /** @var LevelProvider $provider */
-        if (is_subclass_of($provider, LevelProvider::class, true)) {
-            $this->provider = new $provider($path, $this->timings);
-        }else{
-            throw new LevelException("Provider is not a subclass of LevelProvider");
-        }
+        if (is_subclass_of($provider, LevelProvider::class)) {
+			$this->provider = new $provider($path, $this->timings);
+		}
 
         $this->displayName = $this->provider->getName();
         $this->worldHeight = $this->provider->getWorldHeight();

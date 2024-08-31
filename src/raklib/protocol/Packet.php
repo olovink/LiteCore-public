@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace raklib\protocol;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use raklib\utils\InternetAddress;
@@ -27,8 +28,8 @@ use function inet_ntop;
 use function inet_pton;
 use function strlen;
 use const AF_INET6;
+
 #ifndef COMPILE
-use pocketmine\utils\Binary;
 #endif
 
 #include <rules/RakLibPacket.h>

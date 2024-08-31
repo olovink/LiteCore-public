@@ -26,11 +26,10 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\Player;
-use pocketmine\math\Vector3;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\Player;
 
 class Zombie extends Monster {
 	const NETWORK_ID = 32;

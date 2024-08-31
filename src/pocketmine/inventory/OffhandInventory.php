@@ -7,7 +7,6 @@ namespace pocketmine\inventory;
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 

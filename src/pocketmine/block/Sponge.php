@@ -21,9 +21,9 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\item\Item;
 use pocketmine\Server;
 
 class Sponge extends Solid {

@@ -181,7 +181,7 @@ namespace pocketmine {
 		flock(\pocketmine\LOCK_FILE, LOCK_SH);
 		$pid = stream_get_contents(\pocketmine\LOCK_FILE);
 
-		echo "[CRITICAL] Another LiteCore instance (PID $pid) is already using this folder (" . realpath(\pocketmine\DATA) . ")." . PHP_EOL;
+		echo "[CRITICAL] Another PocketMine-MP instance (PID $pid) is already using this folder (" . realpath(\pocketmine\DATA) . ")." . PHP_EOL;
 		echo "[CRITICAL] Please stop the other server first before running a new one." . PHP_EOL;
 		exit(1);
 	}

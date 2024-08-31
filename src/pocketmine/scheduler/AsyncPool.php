@@ -23,12 +23,9 @@ namespace pocketmine\scheduler;
 
 use pocketmine\event\Timings;
 use pocketmine\Server;
-use function array_keys;
 use function assert;
 use function count;
-use function spl_object_hash;
 use function time;
-use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_CONSTANTS;
 use const PTHREADS_INHERIT_INI;
 

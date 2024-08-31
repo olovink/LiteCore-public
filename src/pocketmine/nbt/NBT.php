@@ -39,10 +39,10 @@ use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 
 #ifndef COMPILE
-use pocketmine\utils\Binary;
 #endif
 
 

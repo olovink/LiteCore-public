@@ -21,13 +21,13 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\level\particle\ItemBreakParticle;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\item\Item;
-use pocketmine\level\particle\ItemBreakParticle;
 
 class Egg extends Projectile {
 	const NETWORK_ID = 82;

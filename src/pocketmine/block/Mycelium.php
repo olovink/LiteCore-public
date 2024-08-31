@@ -26,7 +26,6 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\Server;
 
 

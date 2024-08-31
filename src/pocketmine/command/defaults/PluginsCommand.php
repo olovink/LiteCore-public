@@ -23,8 +23,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
-use pocketmine\utils\TextFormat;
 use pocketmine\plugin\Plugin;
+use pocketmine\utils\TextFormat;
 
 class PluginsCommand extends VanillaCommand {
 

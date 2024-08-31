@@ -25,9 +25,7 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\ItemFrameAddItemSound;
 use pocketmine\level\sound\ItemFrameRotateItemSound;
-use pocketmine\nbt\tag\{
-	ByteTag, CompoundTag, FloatTag, IntTag, StringTag
-};
+use pocketmine\nbt\tag\{ByteTag, CompoundTag, FloatTag, IntTag, StringTag};
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame as TileItemFrame;
 use pocketmine\tile\Tile;

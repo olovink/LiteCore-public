@@ -21,10 +21,9 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
-use pocketmine\Player;
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
+use pocketmine\Player;
 
 class WhiteGlazedTerracotta extends Solid {
 

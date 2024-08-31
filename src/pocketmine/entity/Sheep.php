@@ -1,35 +1,15 @@
 <?php
 
-/*
- * _      _ _        _____               
- *| |    (_) |      / ____|              
- *| |     _| |_ ___| |     ___  _ __ ___ 
- *| |    | | __/ _ \ |    / _ \| '__/ _ \
- *| |____| | ||  __/ |___| (_) | | |  __/
- *|______|_|\__\___|\_____\___/|_|  \___|
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author genisyspromcpe
- * @link https://github.com/LiteCoreTeam/LiteCore
- *
- *
-*/
-
 namespace pocketmine\entity;
 
 use pocketmine\block\Wool;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\math\Vector3;
 
 class Sheep extends Animal implements Colorable {
 	const NETWORK_ID = 13;

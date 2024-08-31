@@ -21,15 +21,14 @@
 
 namespace pocketmine\inventory;
 
-use pocketmine\Player;
 use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\NBT;
-use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\Player;
 use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 

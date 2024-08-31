@@ -1,38 +1,18 @@
 <?php
 
-/*
- * _      _ _        _____               
- *| |    (_) |      / ____|              
- *| |     _| |_ ___| |     ___  _ __ ___ 
- *| |    | | __/ _ \ |    / _ \| '__/ _ \
- *| |____| | ||  __/ |___| (_) | | |  __/
- *|______|_|\__\___|\_____\___/|_|  \___|
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author genisyspromcpe
- * @link https://github.com/LiteCoreTeam/LiteCore
- *
- *
-*/
 
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\tile\ShulkerBox as TileShulkerBox;
+use pocketmine\tile\Tile;
 
 class ShulkerBox extends Transparent{
     protected $id = self::SHULKER_BOX;

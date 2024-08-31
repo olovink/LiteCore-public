@@ -21,7 +21,6 @@
 
 namespace pocketmine\event;
 
-use pocketmine\event\Timings;
 use pocketmine\level\Level;
 
 class LevelTimings {

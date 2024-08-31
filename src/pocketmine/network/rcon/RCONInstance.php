@@ -45,7 +45,6 @@ use function str_replace;
 use function strlen;
 use function substr;
 use function trim;
-use const PTHREADS_INHERIT_NONE;
 use const SO_KEEPALIVE;
 use const SO_LINGER;
 use const SOCKET_ECONNRESET;
