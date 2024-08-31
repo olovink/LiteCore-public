@@ -71,9 +71,6 @@ abstract class Particle extends Vector3 {
 	const TYPE_TOTEM = 43;
 	const TYPE_FOOD = 44;
 
-	/**
-	 * @return DataPacket|DataPacket[]
-	 */
 	abstract public function encode();
 
 }

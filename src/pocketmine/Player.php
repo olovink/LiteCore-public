@@ -58,7 +58,7 @@ use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
-use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\event\player\PlayerAsyncChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
@@ -3403,13 +3403,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 								$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 								Timings::$playerCommandTimer->stopTiming();
 							}else{
-								$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
-								if(!$ev->isCancelled()){
-									$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [
-										$ev->getPlayer()->getDisplayName(),
-										$ev->getMessage()
-									]), $ev->getRecipients());
-								}
+								$this->server->getPluginManager()->callEvent($ev = new PlayerAsyncChatEvent($this, $ev->getMessage()));
+                                $ev->getWaitGroup()->wait(function() use($ev) : void{
+                                    if(!$ev->isCancelled()){
+                                        $this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
+                                    }
+                                });
 							}
 						}
 					}
@@ -3815,14 +3814,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$timings->stopTiming();
 	}
 
-	/**
-	 * Kicks a player from the server
-	 *
-	 * @param string $reason
-	 * @param bool   $isAdmin
-	 *
-	 * @return bool
-	 */
+    /**
+     * Kicks a player from the server
+     *
+     * @param string $reason
+     * @param bool $isAdmin
+     * @param null $quitMessage
+     * @return bool
+     */
 	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage()));
 		if(!$ev->isCancelled()){

@@ -91,11 +91,15 @@ class RakLibServer extends \Thread{
 	/** @var SleeperNotifier|null */
 	protected $mainThreadNotifier;
 
-	/**
-	 * @param string               $autoloaderPath Path to Composer autoloader
-	 * @param int|null             $overrideProtocolVersion Optional custom protocol version to use, defaults to current RakLib's protocol
-	 */
-	public function __construct(\ThreadedLogger $logger, $autoloaderPath, InternetAddress $address, int $maxMtuSize = 1492, ?int $overrideProtocolVersion = null, ?SleeperNotifier $sleeper = null){
+    /**
+     * @param \ThreadedLogger $logger
+     * @param \ClassLoader $autoloaderPath Path to Composer autoloader
+     * @param InternetAddress $address
+     * @param int $maxMtuSize
+     * @param int|null $overrideProtocolVersion Optional custom protocol version to use, defaults to current RakLib's protocol
+     * @param SleeperNotifier|null $sleeper
+     */
+	public function __construct(\ThreadedLogger $logger, \ClassLoader $autoloaderPath, InternetAddress $address, int $maxMtuSize = 1492, ?int $overrideProtocolVersion = null, ?SleeperNotifier $sleeper = null){
 		$this->address = $address;
 
 		$this->serverId = mt_rand(0, PHP_INT_MAX);

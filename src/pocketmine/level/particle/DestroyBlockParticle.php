@@ -40,10 +40,8 @@ class DestroyBlockParticle extends Particle {
 		$this->data = $b->getId() | ($b->getDamage() << 8);
 	}
 
-	/**
-	 * @return LevelEventPacket
-	 */
-	public function encode(){
+
+	public function encode() {
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_PARTICLE_DESTROY;
 		$pk->x = $this->x;

@@ -23,6 +23,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use AllowDynamicProperties;
 use pocketmine\utils\BinaryStream;
 use function get_class;
 use function strlen;
@@ -32,7 +33,7 @@ use const ZLIB_ENCODING_DEFLATE;
 use pocketmine\utils\Binary;
 #endif
 
-class BatchPacket extends DataPacket{
+#[AllowDynamicProperties] class BatchPacket extends DataPacket{
 	const NETWORK_ID = 0xfe;
 
 	/** @var string */

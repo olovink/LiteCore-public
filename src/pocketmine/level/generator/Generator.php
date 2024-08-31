@@ -182,8 +182,8 @@ abstract class Generator {
 	 * @param int   $y
 	 * @param int   $z
 	 *
-	 * @return \SplFixedArray
-	 */
+	 * @return array
+     */
 	public static function getFastNoise3D(Noise $noise, $xSize, $ySize, $zSize, $xSamplingRate, $ySamplingRate, $zSamplingRate, $x, $y, $z){
 		if($xSamplingRate === 0){
 			throw new \InvalidArgumentException("xSamplingRate cannot be 0");

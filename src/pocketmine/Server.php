@@ -38,6 +38,7 @@ use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
@@ -113,6 +114,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
+use purenex\world\generator\PureGenerator;
 
 /**
  * The class that manages everything
@@ -1093,7 +1095,6 @@ class Server{
 
 			return false;
 		}
-
 		try{
 			$level = new Level($this, $name, $path, $provider);
 		}catch(\Throwable $e){
@@ -1831,7 +1832,6 @@ class Server{
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
 				LevelProviderManager::addProvider(LevelDB::class);
 			}
-
 
 			Generator::addGenerator(Flat::class, "flat");
 			Generator::addGenerator(Normal::class, "normal");

@@ -25,24 +25,22 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\WaitGroup;
 use function spl_object_id;
 
 /**
- * Called when a player chats something
+ * AsyncChatEvent 
  */
-class PlayerChatEvent extends PlayerEvent implements Cancellable {
+class PlayerAsyncChatEvent extends PlayerEvent implements Cancellable {
 	public static $handlerList = null;
 
-	/** @var string */
-	protected $message;
+    private WaitGroup $waitGroup;
 
-	/** @var string */
-	protected $format;
+	protected string $message;
 
-	/**
-	 * @var Player[]
-	 */
-	protected $recipients = [];
+	protected string $format;
+
+	protected array $recipients = [];
 
 	/**
 	 * PlayerChatEvent constructor.
@@ -58,6 +56,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 		$this->format = $format;
 
+        $this->waitGroup = new WaitGroup;
 		if($recipients === null){
 			foreach(Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS) as $permissible){
 				if($permissible instanceof CommandSender){
@@ -76,19 +75,11 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable {
 		return $this->message;
 	}
 
-	/**
-	 * @param $message
-	 */
-	public function setMessage($message){
+	public function setMessage($message): void{
 		$this->message = $message;
 	}
 
-	/**
-	 * Changes the player that is sending the message
-	 *
-	 * @param Player $player
-	 */
-	public function setPlayer(Player $player){
+	public function setPlayer(Player $player): void{
 		$this->player = $player;
 	}
 
@@ -119,4 +110,8 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	public function setRecipients(array $recipients){
 		$this->recipients = $recipients;
 	}
+
+    public function getWaitGroup() : WaitGroup{
+        return $this->waitGroup;
+    }
 }

@@ -46,8 +46,8 @@ abstract class LevelProviderManager {
 	 *
 	 * @param string $path
 	 *
-	 * @return string|null
-	 */
+	 * @return LevelProvider
+     */
 	public static function getProvider(string $path){
 		foreach(self::$providers as $provider){
 			/** @var $provider LevelProvider */
