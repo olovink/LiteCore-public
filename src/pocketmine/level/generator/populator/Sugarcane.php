@@ -22,6 +22,7 @@
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
@@ -66,7 +67,7 @@ class Sugarcane extends Populator {
 			if($y !== -1){
 				for(; $y < 127 and $y < $yMax; $y++){
 					if($this->canSugarcaneStay($x, $y, $z)){
-						$this->level->setBlockIdAt($x, $y, $z, Block::SUGARCANE_BLOCK);
+						$this->level->setBlockIdAt($x, $y, $z, BlockIds::SUGARCANE_BLOCK);
 						$this->level->setBlockDataAt($x, $y, $z, 1);
 					}
 				}

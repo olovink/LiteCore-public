@@ -84,9 +84,17 @@ class Random {
 	 *
 	 * @return int
 	 */
-	public function nextInt(){
+	public function nextInt(): int{
 		return $this->nextSignedInt() & 0x7fffffff;
 	}
+
+    public function nextIntJava($bits): int{
+        $a = ($this->seed * 0x5DEECE66D + 0xB);
+        $b = (1 << 48) - 1;
+        $this->seed = $a & $b;
+        return ($this->seed >> (48 - $bits));
+    }
+
 
 	/**
 	 * Returns a 32-bit integer (signed)

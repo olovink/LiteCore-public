@@ -23,67 +23,57 @@ namespace pocketmine\level\generator\normal\biome;
 
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\level\generator\populator\Cactus;
 use pocketmine\level\generator\populator\DeadBush;
+use pocketmine\level\generator\populator\TallGrass;
 
 class SandyBiome extends GrassyBiome {
 
 	/**
 	 * SandyBiome constructor.
 	 */
-	public function __construct(){
-		parent::__construct();
+    public function __construct() {
+        parent::__construct();
 
-		$cactus = new Cactus();
-		$cactus->setBaseAmount(6);
-		$deadBush = new DeadBush();
-		$deadBush->setBaseAmount(2);
+        $this->initializePopulators();
+        $this->setEnvironment();
+    }
 
-		$this->addPopulator($cactus);
-		$this->addPopulator($deadBush);
+    private function initializePopulators(): void{
+        $populators = [
+            $this->createPopulator(Cactus::class, 6),
+            $this->createPopulator(DeadBush::class, 2),
+            $this->createPopulator(TallGrass::class, 5)
+        ];
 
-		$this->setElevation(63, 81);
+        foreach ($populators as $populator) {
+            $this->addPopulator($populator);
+        }
+    }
 
-		$this->temperature = 0.05;
-		$this->rainfall = 0.8;
-		$this->setGroundCover([
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-		]);
-	}
+    private function createPopulator(string $className, int $baseAmount) {
+        $populator = new $className();
+        $populator->setBaseAmount($baseAmount);
+        return $populator;
+    }
+
+    private function setEnvironment(): void{
+        $this->setElevation(63, 81);
+        $this->temperature = 0.05;
+        $this->rainfall = 0.8;
+        $this->setGroundCover($this->generateGroundCover());
+    }
+
+    private function generateGroundCover(): array{
+        $sand = Block::get(BlockIds::SAND);
+        $sandstone = Block::get(BlockIds::SANDSTONE);
+
+        return array_merge(
+            array_fill(0, 10, $sand),
+            array_fill(0, 20, $sandstone)
+        );
+    }
 
 	/**
 	 * @return string

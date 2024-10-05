@@ -184,73 +184,63 @@ abstract class Generator {
 	 *
 	 * @return array
      */
-	public static function getFastNoise3D(Noise $noise, $xSize, $ySize, $zSize, $xSamplingRate, $ySamplingRate, $zSamplingRate, $x, $y, $z){
-		if($xSamplingRate === 0){
-			throw new \InvalidArgumentException("xSamplingRate cannot be 0");
-		}
-		if($zSamplingRate === 0){
-			throw new \InvalidArgumentException("zSamplingRate cannot be 0");
-		}
-		if($ySamplingRate === 0){
-			throw new \InvalidArgumentException("ySamplingRate cannot be 0");
-		}
-		if($xSize % $xSamplingRate !== 0){
-			throw new \InvalidArgumentException("xSize % xSamplingRate must return 0");
-		}
-		if($zSize % $zSamplingRate !== 0){
-			throw new \InvalidArgumentException("zSize % zSamplingRate must return 0");
-		}
-		if($ySize % $ySamplingRate !== 0){
-			throw new \InvalidArgumentException("ySize % ySamplingRate must return 0");
-		}
+    public static function getFastNoise3D(Noise $noise, $xSize, $ySize, $zSize, $xSamplingRate, $ySamplingRate, $zSamplingRate, $x, $y, $z) {
+        // Validate sampling rates
+        if ($xSamplingRate === 0 || $ySamplingRate === 0 || $zSamplingRate === 0) {
+            throw new \InvalidArgumentException("Sampling rates cannot be 0");
+        }
 
-		$noiseArray = array_fill(0, $xSize + 1, array_fill(0, $zSize + 1, []));
+        // Validate sizes against sampling rates
+        foreach ([$xSize => $xSamplingRate, $ySize => $ySamplingRate, $zSize => $zSamplingRate] as $size => $rate) {
+            if ($size % $rate !== 0) {
+                throw new \InvalidArgumentException("Size % SamplingRate must return 0");
+            }
+        }
 
-		for($xx = 0; $xx <= $xSize; $xx += $xSamplingRate){
-			for($zz = 0; $zz <= $zSize; $zz += $zSamplingRate){
-				for($yy = 0; $yy <= $ySize; $yy += $ySamplingRate){
-					$noiseArray[$xx][$zz][$yy] = $noise->noise3D($x + $xx, $y + $yy, $z + $zz, true);
-				}
-			}
-		}
+        // Initialize noise array
+        $noiseArray = array_fill(0, $xSize + 1, array_fill(0, $zSize + 1, array_fill(0, $ySize + 1, 0)));
 
-		for($xx = 0; $xx < $xSize; ++$xx){
-			for($zz = 0; $zz < $zSize; ++$zz){
-				for($yy = 0; $yy < $ySize; ++$yy){
-					if($xx % $xSamplingRate !== 0 or $zz % $zSamplingRate !== 0 or $yy % $ySamplingRate !== 0){
-						$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
-						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
-						$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
+        // Generate noise at sampled points
+        for ($xx = 0; $xx <= $xSize; $xx += $xSamplingRate) {
+            for ($zz = 0; $zz <= $zSize; $zz += $zSamplingRate) {
+                for ($yy = 0; $yy <= $ySize; $yy += $ySamplingRate) {
+                    $noiseArray[$xx][$zz][$yy] = $noise->noise3D($x + $xx, $y + $yy, $z + $zz, true);
+                }
+            }
+        }
 
-						$nnx = $nx + $xSamplingRate;
-						$nny = $ny + $ySamplingRate;
-						$nnz = $nz + $zSamplingRate;
+        // Interpolate noise values for non-sampled points
+        for ($xx = 0; $xx < $xSize; ++$xx) {
+            for ($zz = 0; $zz < $zSize; ++$zz) {
+                for ($yy = 0; $yy < $ySize; ++$yy) {
+                    if ($xx % $xSamplingRate !== 0 || $zz % $zSamplingRate !== 0 || $yy % $ySamplingRate !== 0) {
+                        $nx = (int)($xx / $xSamplingRate) * $xSamplingRate;
+                        $ny = (int)($yy / $ySamplingRate) * $ySamplingRate;
+                        $nz = (int)($zz / $zSamplingRate) * $zSamplingRate;
 
-						$dx1 = (($nnx - $xx) / ($nnx - $nx));
-						$dx2 = (($xx - $nx) / ($nnx - $nx));
-						$dy1 = (($nny - $yy) / ($nny - $ny));
-						$dy2 = (($yy - $ny) / ($nny - $ny));
+                        $nnx = $nx + $xSamplingRate;
+                        $nny = $ny + $ySamplingRate;
+                        $nnz = $nz + $zSamplingRate;
 
-						$noiseArray[$xx][$zz][$yy] = (($nnz - $zz) / ($nnz - $nz)) * (
-								$dy1 * (
-									$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
-								) + $dy2 * (
-									$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
-								)
-							) + (($zz - $nz) / ($nnz - $nz)) * (
-								$dy1 * (
-									$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
-								) + $dy2 * (
-									$dx1 * $noiseArray[$nx][$nnz][$nny] + $dx2 * $noiseArray[$nnx][$nnz][$nny]
-								)
-							);
-					}
-				}
-			}
-		}
+                        $dx1 = ($nnx - $xx) / ($nnx - $nx);
+                        $dx2 = ($xx - $nx) / ($nnx - $nx);
+                        $dy1 = ($nny - $yy) / ($nny - $ny);
+                        $dy2 = ($yy - $ny) / ($nny - $ny);
 
-		return $noiseArray;
-	}
+                        $noiseArray[$xx][$zz][$yy] = (($nnz - $zz) / ($nnz - $nz)) * (
+                                $dy1 * ($dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]) +
+                                $dy2 * ($dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny])
+                            ) + (($zz - $nz) / ($nnz - $nz)) * (
+                                $dy1 * ($dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]) +
+                                $dy2 * ($dx1 * $noiseArray[$nx][$nnz][$nny] + $dx2 * $noiseArray[$nnx][$nnz][$nny])
+                            );
+                    }
+                }
+            }
+        }
+
+        return $noiseArray;
+    }
 
 	/**
 	 * @return int

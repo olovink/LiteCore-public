@@ -3773,7 +3773,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 			case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
 				if($packet->gamemode !== $this->gamemode){
-					//Set this back to default. TODO: handle this properly
 					$this->sendGamemode();
 					$this->sendSettings();
 				}

@@ -278,7 +278,6 @@ class Level implements ChunkManager, Metadatable{
         Block::WHEAT_BLOCK => Wheat::class,
         Block::COCOA_BLOCK => CocoaBlock::class,
         Block::FARMLAND => Farmland::class,
-        Block::SNOW_LAYER => SnowLayer::class,
         Block::ICE => Ice::class,
         Block::CACTUS => Cactus::class,
         Block::SUGARCANE_BLOCK => Sugarcane::class,

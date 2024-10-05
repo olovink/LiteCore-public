@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -89,12 +90,6 @@ class SnowLayer extends Flowable{
 			$this->setDamage($block->getDamage() + 1);
 		}
 
-		if($this->canBeSupportedBy($block->getSide(Vector3::SIDE_DOWN))){
-			$this->getLevel()->setBlock($block, $this, true);
-
-			return true;
-		}
-
 		return false;
 	}
 
@@ -104,14 +99,6 @@ class SnowLayer extends Flowable{
 	 * @return bool|int
 	 */
 	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(!$this->canBeSupportedBy($this->getSide(Vector3::SIDE_DOWN))){
-				$this->getLevel()->setBlock($this, new Air(), false, false);
-
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-
 		return false;
 	}
 
@@ -121,9 +108,9 @@ class SnowLayer extends Flowable{
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isShovel() !== false){
+		if($item->isShovel()){
 			return [
-				[Item::SNOWBALL, 0, 1],
+				[ItemIds::SNOWBALL, 0, 1],
 			];
 		}
 

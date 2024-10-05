@@ -1,59 +1,33 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
- *
-*/
 
 namespace pocketmine\level\generator\populator;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\level\ChunkManager;
+use pocketmine\type\GrassType;
 use pocketmine\utils\Random;
 
 class TallGrass extends Populator {
-	/** @var ChunkManager */
-	private $level;
-	private $randomAmount = 1;
-	private $baseAmount = 0;
+	private ChunkManager $level;
 
-	/**
-	 * @param $amount
-	 */
-	public function setRandomAmount($amount){
+    private int $grassType = GrassType::TYPE_GRASS;
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
+
+    public function setGrassType(int $grassType): void{
+        $this->grassType = $grassType;
+    }
+
+	public function setRandomAmount($amount): void{
 		$this->randomAmount = $amount;
 	}
 
-	/**
-	 * @param $amount
-	 */
-	public function setBaseAmount($amount){
+	public function setBaseAmount($amount): void{
 		$this->baseAmount = $amount;
 	}
 
-	/**
-	 * @param ChunkManager $level
-	 * @param              $chunkX
-	 * @param              $chunkZ
-	 * @param Random       $random
-	 *
-	 * @return mixed|void
-	 */
-	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
+	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random): void{
 		$this->level = $level;
 		$amount = $random->nextRange(0, $this->randomAmount) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
@@ -62,34 +36,21 @@ class TallGrass extends Populator {
 			$y = $this->getHighestWorkableBlock($x, $z);
 
 			if($y !== -1 and $this->canTallGrassStay($x, $y, $z)){
-				$this->level->setBlockIdAt($x, $y, $z, Block::TALL_GRASS);
-				$this->level->setBlockDataAt($x, $y, $z, 1);
+				$this->level->setBlockIdAt($x, $y, $z, BlockIds::TALL_GRASS);
+				$this->level->setBlockDataAt($x, $y, $z, $this->grassType);
 			}
 		}
 	}
 
-	/**
-	 * @param $x
-	 * @param $y
-	 * @param $z
-	 *
-	 * @return bool
-	 */
-	private function canTallGrassStay($x, $y, $z){
-		$b = $this->level->getBlockIdAt($x, $y, $z);
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
+
+	private function canTallGrassStay($x, $y, $z): bool{
+		return $this->level->getBlockIdAt($x, $y - 1, $z) === BlockIds::GRASS;
 	}
 
-	/**
-	 * @param $x
-	 * @param $z
-	 *
-	 * @return int
-	 */
-	private function getHighestWorkableBlock($x, $z){
+	private function getHighestWorkableBlock($x, $z): int{
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
-			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::LEAVES2 and $b !== Block::SNOW_LAYER){
+			if($b !== BlockIds::AIR and $b !== BlockIds::LEAVES and $b !== BlockIds::LEAVES2){
 				break;
 			}
 		}

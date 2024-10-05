@@ -1,30 +1,8 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
-*/
-
-/**
- * Network-related classes
- */
-
 namespace pocketmine\network;
 
+use InvalidArgumentException;
 use InvalidStateException;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
@@ -123,216 +101,142 @@ use function spl_object_hash;
 
 class Network {
 
-	public static $BATCH_THRESHOLD = 512;
+    private int $packetLimit = 500;
 
-	/** @var SplFixedArray */
-	private $packetPool;
+	public static int $BATCH_THRESHOLD = 512;
 
-	/** @var Server */
-	private $server;
+	private SplFixedArray $packetPool;
 
-	/** @var SourceInterface[] */
-	private $interfaces = [];
+	private Server $server;
 
-	/** @var AdvancedSourceInterface[] */
-	private $advancedInterfaces = [];
+	private array $interfaces = [];
 
-	private $upload = 0;
-	private $download = 0;
+	private array $advancedInterfaces = [];
 
-	private $name;
+	private int $upload = 0;
+	private int $download = 0;
 
-	/**
-	 * Network constructor.
-	 *
-	 * @param Server $server
-	 */
+	private string $name;
+
 	public function __construct(Server $server){
 		$this->registerPackets();
 
 		$this->server = $server;
 	}
 
-	/**
-	 * @param $upload
-	 * @param $download
-	 */
-	public function addStatistics($upload, $download){
+	public function addStatistics($upload, $download): void{
 		$this->upload += $upload;
 		$this->download += $download;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getUpload(){
+	public function getUpload(): int{
 		return $this->upload;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getDownload(){
+	public function getDownload(): int{
 		return $this->download;
 	}
 
-	public function resetStatistics(){
+	public function resetStatistics(): void{
 		$this->upload = 0;
 		$this->download = 0;
 	}
 
-	/**
-	 * @return SourceInterface[]
-	 */
-	public function getInterfaces(){
+	public function getInterfaces(): array{
 		return $this->interfaces;
 	}
 
-	public function processInterfaces(){
+	public function processInterfaces(): void{
 		foreach($this->interfaces as $interface){
 			$interface->process();
 		}
 	}
 
-	/**
-	 * @deprecated
-	 * @param SourceInterface $interface
-	 */
-	public function processInterface(SourceInterface $interface) : void{
-		$interface->process();
-	}
-
-	/**
-	 * @param SourceInterface $interface
-	 */
-	public function registerInterface(SourceInterface $interface){
+	public function registerInterface(SourceInterface $interface): void{
 		$interface->start();
 		$this->interfaces[$hash = spl_object_hash($interface)] = $interface;
-		if($interface instanceof AdvancedSourceInterface){
-			$this->advancedInterfaces[$hash] = $interface;
-			$interface->setNetwork($this);
-		}
+
+        $this->advancedInterfaces[$hash] = $interface;
+        $interface->setNetwork($this);
+
 		$interface->setName($this->name);
 	}
 
-	/**
-	 * @param SourceInterface $interface
-	 */
-	public function unregisterInterface(SourceInterface $interface){
+	public function unregisterInterface(SourceInterface $interface): void{
 		unset($this->interfaces[$hash = spl_object_hash($interface)],
 			$this->advancedInterfaces[$hash]);
 	}
 
-	/**
-	 * Sets the server name shown on each interface Query
-	 *
-	 * @param string $name
-	 */
-	public function setName($name){
-		$this->name = (string) $name;
+	public function setName(string $name): void{
+		$this->name = $name;
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
 	}
 
-	public function getName(){
+	public function getName(): string{
 		return $this->name;
 	}
 
-	public function updateName(){
+	public function updateName(): void{
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
 	}
 
-	/**
-	 * @param int        $id 0-255
-	 * @param string $class
-	 */
-	public function registerPacket($id, $class){
+	public function registerPacket(int $id, string $class): void{
 		$this->packetPool[$id] = new $class;
 	}
 
-	/**
-	 * @return Server
-	 */
-	public function getServer(){
+	public function getServer(): Server{
 		return $this->server;
 	}
 
-	/** @var int[] */
-	private $packetsFloodFilter;
+    public function processBatch(BatchPacket $packet, Player $player): void {
+        $rawLen = strlen($packet->payload);
 
-	/**
-	 * @param BatchPacket $packet
-	 * @param Player      $player
-	 */
-	public function processBatch(BatchPacket $packet, Player $player){
-		$rawLen = strlen($packet->payload);
-		if($rawLen === 0){
-			throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
-		}elseif($rawLen < 3){
-			throw new \InvalidArgumentException("Not enough bytes, expected zlib header");
-		}
+        if ($rawLen === 0) {
+            throw new InvalidArgumentException("BatchPacket payload is empty or packet decode error");
+        }
 
-		$str = zlib_decode($packet->payload, 1024 * 1024 * 2); //Max 2MB
-		$len = strlen($str);
+        if ($rawLen < 3) {
+            throw new InvalidArgumentException("Not enough bytes, expected zlib header");
+        }
 
-		if($len === 0){
-			throw new InvalidStateException("Decoded BatchPacket payload is empty");
-		}
+        $str = zlib_decode($packet->payload, 2 * 1024 * 1024); // Max 2MB
+        $len = strlen($str);
 
-		$stream = new BinaryStream($str);
+        if ($len === 0) {
+            throw new InvalidStateException("Decoded BatchPacket payload is empty");
+        }
 
-		$count = 0;
+        $stream = new BinaryStream($str);
 
-		$packetsCounter = [];
-		$isFiltered = false;
-		while(!$stream->feof()){
-			if($count++ >= 500){
-				throw new UnexpectedValueException("Too many packets in a single batch");
-			}
+        for ($count = 0; !$stream->feof(); $count++) {
+            if ($count >= $this->packetLimit) {
+                $this->server->getLogger()->error("Too many packets in a single batch");
+            }
 
-			$buf = $stream->getString();
-			if(($pk = $this->getPacket(ord($buf[0]))) !== null){
-				if(!$pk->canBeBatched()){
-				    throw new UnexpectedValueException("Received invalid " . get_class($pk) . " inside BatchPacket");
-			    }
+            $buf = $stream->getString();
+            if (($pk = $this->getPacket(ord($buf[0]))) !== null) {
+                if (!$pk->canBeBatched()) {
+                    throw new UnexpectedValueException("Received invalid " . get_class($pk) . " inside BatchPacket");
+                }
 
-			    @$packetsCounter[$pk::NETWORK_ID]++;
-			    if(@$packetsCounter[$pk::NETWORK_ID] > 300){ //TODO: говнокод
-				    $isFiltered = true;
-				}
+                $pk->setBuffer($buf, 1);
+                $pk->decode();
 
-				$pk->setBuffer($buf, 1);
+                if (!$pk->feof() && !$pk->mayHaveUnreadBytes()) {
+                    $remains = substr($pk->buffer, $pk->offset);
+                    $this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $pk->getName() . ": 0x" . bin2hex($remains));
+                }
 
-				$pk->decode();
-				if(!$pk->feof() and !$pk->mayHaveUnreadBytes()){
-			        $remains = substr($pk->buffer, $pk->offset);
-			        $this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $pk->getName() . ": 0x" . bin2hex($remains));
-		        }
-			    $player->handleDataPacket($pk);
-			}
-		}
+                $player->handleDataPacket($pk);
+            }
+        }
+    }
 
-		if($isFiltered){
-			if (@$this->packetsFloodFilter[$player->getAddress()] < 15){
-				@$this->packetsFloodFilter[$player->getAddress()]++;
-			}else{
-				unset($this->packetsFloodFilter[$player->getAddress()]);
-				$this->blockAddress($player->getAddress(), 150);
-			}
-		}else{
-			unset($this->packetsFloodFilter[$player->getAddress()]);
-		}
-	}
-
-	/**
-	 * @param $id
-	 *
-	 * @return DataPacket
-	 */
-	public function getPacket($id){
+	public function getPacket($id): ?DataPacket{
 		/** @var DataPacket $class */
 		$class = $this->packetPool[$id];
 		if($class !== null){
@@ -342,41 +246,19 @@ class Network {
 	}
 
 
-	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
-	 */
-	public function sendPacket($address, $port, $payload){
-		foreach($this->advancedInterfaces as $interface){
-			$interface->sendRawPacket($address, $port, $payload);
-		}
-	}
-
-	/**
-	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
-	 *
-	 * @param string $address
-	 * @param int    $timeout
-	 */
-	public function blockAddress($address, $timeout = 300){
+	public function blockAddress(string $address, int $timeout = 300): void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->blockAddress($address, $timeout);
 		}
 	}
 
-	/**
-	 * Unblocks an IP address from the main interface.
-	 *
-	 * @param string $address
-	 */
-	public function unblockAddress($address){
+	public function unblockAddress(string $address): void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);
 		}
 	}
 
-	private function registerPackets(){
+	private function registerPackets(): void{
 		$this->packetPool = new SplFixedArray(256);
 
 		$this->registerPacket(ProtocolInfo::ADD_ENTITY_PACKET, AddEntityPacket::class);

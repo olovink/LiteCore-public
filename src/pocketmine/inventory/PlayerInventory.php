@@ -436,28 +436,19 @@ class PlayerInventory extends BaseInventory{
 			$old = $this->slots[$index];
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
 				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
-				if($ev->isCancelled()){
-					if($index >= $this->size){
-						$this->sendArmorSlot($index, $this->getViewers());
-					}else{
-						$this->sendSlot($index, $this->getViewers());
-					}
-					return false;
-				}
-				$item = $ev->getNewItem();
-			}else{
+            }else{
 				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $old, $item, $index));
-				if($ev->isCancelled()){
-					if($index >= $this->size){
-						$this->sendArmorSlot($index, $this->getViewers());
-					}else{
-						$this->sendSlot($index, $this->getViewers());
-					}
-					return false;
-				}
-				$item = $ev->getNewItem();
-			}
-			if($item->getId() !== Item::AIR){
+            }
+            if($ev->isCancelled()){
+                if($index >= $this->size){
+                    $this->sendArmorSlot($index, $this->getViewers());
+                }else{
+                    $this->sendSlot($index, $this->getViewers());
+                }
+                return false;
+            }
+            $item = $ev->getNewItem();
+            if($item->getId() !== Item::AIR){
 				$this->slots[$index] = clone $item;
 			}else{
 				unset($this->slots[$index]);

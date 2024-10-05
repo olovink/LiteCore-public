@@ -1,23 +1,5 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
-*/
 
 namespace pocketmine\level\generator;
 
@@ -28,126 +10,116 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
 
-class PopulationTask extends AsyncTask{
+class PopulationTask extends AsyncTask {
 
-	/** @var bool */
-	public $state;
-	/** @var int */
-	public $levelId;
-	/** @var string */
-	public $chunk;
+    public bool $state;
+    public int $levelId;
+    public string $chunk;
 
-	/** @var string */
-	public $chunk0;
-	/** @var string */
-	public $chunk1;
-	/** @var string */
-	public $chunk2;
-	/** @var string */
-	public $chunk3;
+    public function __construct(Level $level, Chunk $chunk) {
+        $this->state = true;
+        $this->levelId = $level->getId();
+        $this->chunk = $chunk->fastSerialize();
+        $this->initializeAdjacentChunks($level, $chunk);
+    }
 
-	//center chunk
+    private function initializeAdjacentChunks(Level $level, Chunk $chunk): void {
+        foreach ($level->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c) {
+            $this->{"chunk$i"} = $c?->fastSerialize();
+        }
+    }
 
-	/** @var string */
-	public $chunk5;
-	/** @var string */
-	public $chunk6;
-	/** @var string */
-	public $chunk7;
-	/** @var string */
-	public $chunk8;
+    public function onRun(): void {
+        $manager = $this->getFromThreadStore("generation.level{$this->levelId}.manager");
+        $generator = $this->getFromThreadStore("generation.level{$this->levelId}.generator");
 
-	public function __construct(Level $level, Chunk $chunk){
-		$this->state = true;
-		$this->levelId = $level->getId();
-		$this->chunk = $chunk->fastSerialize();
+        if (!($manager instanceof SimpleChunkManager) || !($generator instanceof Generator)) {
+            $this->state = false;
+            return;
+        }
 
-		foreach($level->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
-			$this->{"chunk$i"} = $c !== null ? $c->fastSerialize() : null;
-		}
-	}
+        $chunks = $this->prepareChunks();
+        $this->processChunk($manager, $generator, $chunks);
+        $this->finalizeChunk($manager, $generator, $chunks);
+    }
 
-	public function onRun(){
-		$manager = $this->getFromThreadStore("generation.level{$this->levelId}.manager");
-		$generator = $this->getFromThreadStore("generation.level{$this->levelId}.generator");
-		if(!($manager instanceof SimpleChunkManager) or !($generator instanceof Generator)){
-			$this->state = false;
-			return;
-		}
+    private function prepareChunks(): array {
+        $chunks = [];
+        $chunk = Chunk::fastDeserialize($this->chunk);
 
-		/** @var Chunk[] $chunks */
-		$chunks = [];
+        for ($i = 0; $i < 9; ++$i) {
+            if ($i === 4) {
+                continue;
+            }
+            $xx = -1 + $i % 3;
+            $zz = -1 + (int)($i / 3);
+            $ck = $this->{"chunk$i"};
+            $chunks[$i] = $ck === null ? new Chunk($chunk->getX() + $xx, $chunk->getZ() + $zz) : Chunk::fastDeserialize($ck);
+        }
 
-		$chunk = Chunk::fastDeserialize($this->chunk);
+        return $chunks;
+    }
 
-		for($i = 0; $i < 9; ++$i){
-			if($i === 4){
-				continue;
-			}
-			$xx = -1 + $i % 3;
-			$zz = -1 + (int) ($i / 3);
-			$ck = $this->{"chunk$i"};
-			if($ck === null){
-				$chunks[$i] = new Chunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
-			}else{
-				$chunks[$i] = Chunk::fastDeserialize($ck);
-			}
-		}
+    private function processChunk(SimpleChunkManager $manager, Generator $generator, array $chunks): void {
+        $chunk = Chunk::fastDeserialize($this->chunk);
+        $manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
 
-		$manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
-		if(!$chunk->isGenerated()){
-			$generator->generateChunk($chunk->getX(), $chunk->getZ());
-			$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
-			$chunk->setGenerated();
-		}
+        if (!$chunk->isGenerated()) {
+            $generator->generateChunk($chunk->getX(), $chunk->getZ());
+            $chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+            $chunk->setGenerated();
+        }
 
-		foreach($chunks as $i => $c){
-			$manager->setChunk($c->getX(), $c->getZ(), $c);
-			if(!$c->isGenerated()){
-				$generator->generateChunk($c->getX(), $c->getZ());
-				$chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
-				$chunks[$i]->setGenerated();
-			}
-		}
+        foreach ($chunks as $i => $c) {
+            $manager->setChunk($c->getX(), $c->getZ(), $c);
+            if (!$c->isGenerated()) {
+                $generator->generateChunk($c->getX(), $c->getZ());
+                $chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
+                $chunks[$i]->setGenerated();
+            }
+        }
+    }
 
-		$generator->populateChunk($chunk->getX(), $chunk->getZ());
-		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
-		$chunk->setPopulated();
+    private function finalizeChunk(SimpleChunkManager $manager, Generator $generator, array $chunks): void {
+        $chunk = Chunk::fastDeserialize($this->chunk);
+        $generator->populateChunk($chunk->getX(), $chunk->getZ());
+        $chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+        $chunk->setPopulated();
+        $chunk->recalculateHeightMap();
+        $chunk->populateSkyLight();
+        $chunk->setLightPopulated();
+        $this->chunk = $chunk->fastSerialize();
 
-		$chunk->recalculateHeightMap();
-		$chunk->populateSkyLight();
-		$chunk->setLightPopulated();
+        foreach ($chunks as $i => $c) {
+            $this->{"chunk$i"} = $c->hasChanged() ? $c->fastSerialize() : null;
+        }
 
-		$this->chunk = $chunk->fastSerialize();
+        $manager->cleanChunks();
+    }
 
-		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->hasChanged() ? $c->fastSerialize() : null;
-		}
+    public function onCompletion(Server $server): void {
+        $level = $server->getLevel($this->levelId);
+        if ($level !== null) {
+            if (!$this->state) {
+                $level->registerGenerator();
+            }
 
-		$manager->cleanChunks();
-	}
+            $chunk = Chunk::fastDeserialize($this->chunk);
+            $this->generateCallbackForChunks($level, $chunk);
+        }
+    }
 
-	public function onCompletion(Server $server){
-		$level = $server->getLevel($this->levelId);
-		if($level !== null){
-			if(!$this->state){
-				$level->registerGenerator();
-			}
-
-			$chunk = Chunk::fastDeserialize($this->chunk);
-
-			for($i = 0; $i < 9; ++$i){
-				if($i === 4){
-					continue;
-				}
-				$c = $this->{"chunk$i"};
-				if($c !== null){
-					$c = Chunk::fastDeserialize($c);
-					$level->generateChunkCallback($c->getX(), $c->getZ(), $this->state ? $c : null);
-				}
-			}
-
-			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $this->state ? $chunk : null);
-		}
-	}
+    private function generateCallbackForChunks(Level $level, Chunk $chunk): void {
+        for ($i = 0; $i < 9; ++$i) {
+            if ($i === 4) {
+                continue;
+            }
+            $c = $this->{"chunk$i"};
+            if ($c !== null) {
+                $c = Chunk::fastDeserialize($c);
+                $level->generateChunkCallback($c->getX(), $c->getZ(), $this->state ? $c : null);
+            }
+        }
+        $level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $this->state ? $chunk : null);
+    }
 }

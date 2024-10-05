@@ -22,10 +22,14 @@
 namespace pocketmine\level\generator\normal\biome;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\block\Sapling;
+use pocketmine\level\generator\populator\DoubleTallGrass;
 use pocketmine\level\generator\populator\MossStone;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
+use pocketmine\type\DoublePlantType;
+use pocketmine\type\GrassType;
 
 class TaigaBiome extends SnowyBiome {
 
@@ -36,16 +40,21 @@ class TaigaBiome extends SnowyBiome {
 		parent::__construct();
 
 		$trees = new Tree(Sapling::SPRUCE);
-		$trees->setBaseAmount(10);
+		$trees->setBaseAmount(3);
 		$this->addPopulator($trees);
 
-		$mossStone = new MossStone();
-		$mossStone->setBaseAmount(1);
+        $doubleFern = new DoubleTallGrass();
+        $doubleFern->setPlantType(DoublePlantType::TYPE_FERN);
+        $doubleFern->setBaseAmount(5);
+        $this->addPopulator($doubleFern);
+
+        $fernGrass = new TallGrass();
+        $fernGrass->setGrassType(GrassType::TYPE_FERN);
+        $fernGrass->setBaseAmount(5);
+        $this->addPopulator($fernGrass);
 
 		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(1);
-
-		$this->addPopulator($mossStone);
 		$this->addPopulator($tallGrass);
 
 		$this->setElevation(63, 81);
@@ -54,7 +63,7 @@ class TaigaBiome extends SnowyBiome {
 		$this->rainfall = 0.8;
 
 		$this->setGroundCover([
-			Block::get(Block::PODZOL, 0),
+			Block::get(Block::GRASS, 0),
 			Block::get(Block::DIRT, 0),
 			Block::get(Block::DIRT, 0),
 			Block::get(Block::DIRT, 0)

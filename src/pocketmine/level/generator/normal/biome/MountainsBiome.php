@@ -41,8 +41,6 @@ class MountainsBiome extends GrassyBiome {
 
 		$this->addPopulator($tallGrass);
 
-		//TODO: add emerald
-
 		$this->setElevation(63, 127);
 
 		$this->temperature = 0.4;

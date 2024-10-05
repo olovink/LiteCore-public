@@ -29,6 +29,7 @@ use pocketmine\entity\Entity;
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent {
 
+    public static $handlerList = null;
 	/** @var int */
 	private $damagerEid;
 	/** @var float */

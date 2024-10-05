@@ -22,6 +22,11 @@
 namespace pocketmine\level\generator\normal\biome;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
+use pocketmine\level\generator\populator\DoubleTallGrass;
+use pocketmine\level\generator\populator\TallGrass;
+use pocketmine\type\DoublePlantType;
+use pocketmine\type\GrassType;
 
 abstract class SnowyBiome extends NormalBiome {
 
@@ -29,8 +34,17 @@ abstract class SnowyBiome extends NormalBiome {
 	 * SnowyBiome constructor.
 	 */
 	public function __construct(){
+        $doublePlantGrass = new DoubleTallGrass();
+        $doublePlantGrass->setBaseAmount(1);
+        $doublePlantGrass->setPlantType(DoublePlantType::TYPE_GRASS);
+        $this->addPopulator($doublePlantGrass);
+
+        $grass = new TallGrass();
+        $grass->setBaseAmount(5);
+        $grass->setGrassType(GrassType::TYPE_GRASS);
+        $this->addPopulator($grass);
+
 		$this->setGroundCover([
-			Block::get(Block::SNOW_LAYER, 0),
 			Block::get(Block::GRASS, 0),
 			Block::get(Block::DIRT, 0),
 			Block::get(Block::DIRT, 0),

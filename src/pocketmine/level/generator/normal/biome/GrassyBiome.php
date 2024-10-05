@@ -22,6 +22,9 @@
 namespace pocketmine\level\generator\normal\biome;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
+use pocketmine\level\generator\populator\DoubleTallGrass;
+use pocketmine\type\DoublePlantType;
 
 abstract class GrassyBiome extends NormalBiome {
 
@@ -29,12 +32,22 @@ abstract class GrassyBiome extends NormalBiome {
 	 * GrassyBiome constructor.
 	 */
 	public function __construct(){
-		$this->setGroundCover([
-			Block::get(Block::GRASS, 0),
-			Block::get(Block::DIRT, 0),
-			Block::get(Block::DIRT, 0),
-			Block::get(Block::DIRT, 0),
-			Block::get(Block::DIRT, 0),
-		]);
+        $this->setGroundCover($this->generateGroundCover());
+
+        $doublePlantGrass = new DoubleTallGrass();
+        $doublePlantGrass->setBaseAmount(1);
+        $doublePlantGrass->setPlantType(DoublePlantType::TYPE_GRASS);
+        $this->addPopulator($doublePlantGrass);
 	}
+
+
+    private function generateGroundCover(): array{
+        $grass = Block::get(BlockIds::GRASS);
+        $dirt = Block::get(BlockIds::DIRT);
+
+        return array_merge(
+            array_fill(0, 1, $grass),
+            array_fill(0, 20, $dirt)
+        );
+    }
 }
