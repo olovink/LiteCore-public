@@ -28,8 +28,6 @@ use pocketmine\entity\Entity;
  * Called when an entity takes damage from another entity.
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent {
-
-    public static $handlerList = null;
 	/** @var int */
 	private $damagerEid;
 	/** @var float */
